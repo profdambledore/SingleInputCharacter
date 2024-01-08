@@ -62,17 +62,19 @@ public:
 protected:
 	/// -- Camera --
 	// Bool to denote if the camera is currently in overhead view
-	bool bInOverheadView = false;
+	bool bInOverheadView = true;
 
 	// Float to denote the overhead camera angle's pitch
 	float OverheadCameraAngle = -90.0f;
 
 	// Float to denote the 2.5D (or standard) camera angle's pitch
-	float StandardCameraAngle = -50.0f;
+	float StandardCameraAngle = -45.0f;
 
 	// Float to denote rotation speed
 	float CameraRotationSpeed = 3.0f;
 
 	// Float to denote rotation step value
 	float RotationStep = 10;
+
+	int CurrentStep = 0;
 };

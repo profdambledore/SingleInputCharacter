@@ -9,17 +9,17 @@ ASingleInputPerson::ASingleInputPerson()
 	// Cameras
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Character Spring Arm"));
 	CameraSpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	CameraSpringArm->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	CameraSpringArm->TargetArmLength = 2000.0f;
 	CameraSpringArm->bUsePawnControlRotation = false;
 	CameraSpringArm->SetupAttachment(GetCapsuleComponent(), "");
+	CameraSpringArm->bInheritPitch = false; CameraSpringArm->bInheritYaw = false; CameraSpringArm->bInheritRoll = false;
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set the default AI Class
 	AIControllerClass = ASingleInputAIController::StaticClass();
-
-	SwapCameraAngle();
 }
 
 // Called when the game starts or when spawned
@@ -45,31 +45,32 @@ void ASingleInputPerson::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void ASingleInputPerson::SwapCameraAngle()
 {
+	float NewYaw = CameraSpringArm->GetRelativeRotation().Yaw;
 	if (bInOverheadView) {
 		bInOverheadView = false;
-		CameraSpringArm->SetRelativeRotation(FRotator(StandardCameraAngle, CameraSpringArm->GetRelativeRotation().Yaw, 0));
+		CameraSpringArm->SetRelativeRotation(FRotator(StandardCameraAngle, CurrentStep * RotationStep, 0));
 	}
 	else {
 		bInOverheadView = true;
-		CameraSpringArm->SetRelativeRotation(FRotator(OverheadCameraAngle, CameraSpringArm->GetRelativeRotation().Yaw, 0));
+		CameraSpringArm->SetRelativeRotation(FRotator(OverheadCameraAngle, CurrentStep * RotationStep, 0));
 	}
 }
 
 void ASingleInputPerson::RotateCameraByStep(bool bRotateClockwise)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Rotate Camera"));
-	int NewStep = RotationStep;
 	if (!bRotateClockwise) {
-		NewStep = NewStep * -1;
+		CurrentStep--;
 	}
-
-	CameraSpringArm->AddRelativeRotation(FRotator(0.0f, NewStep, 0.0f));
+	else {
+		CurrentStep++;
+	}
+	CameraSpringArm->SetRelativeRotation(FRotator(CameraSpringArm->GetRelativeRotation().Pitch, CurrentStep * CurrentStep, 0.0f));
 }
 
 void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirection)
 {
 	FHitResult TraceHit;
-	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 2000), ECC_WorldStatic, FCollisionQueryParams(FName("DistTrace"), true));
+	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 4000), ECC_WorldStatic, FCollisionQueryParams(FName("DistTrace"), true));
 	AI->MoveToLocation(TraceHit.Location);
 }
 

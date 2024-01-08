@@ -66,6 +66,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	bool bDebug = true;
 
+	/// -- UI --
+	// Pointer to the UI added to the viewport
+	class USingleInputUI* UI = nullptr;
+
 private:
 
 

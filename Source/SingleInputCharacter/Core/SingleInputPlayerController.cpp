@@ -5,6 +5,7 @@
 #include "Core/SingleInputPlayer.h"
 #include "Core/SingleInputAIController.h"
 #include "Core/SingleInputPerson.h"
+#include "Core/SingleInputUI.h"
 
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
@@ -22,6 +23,13 @@ ASingleInputPlayerController::ASingleInputPlayerController()
 	// Last, find the Input Mapping Context
 	ConstructorHelpers::FObjectFinder<UInputMappingContext>IMCObject(TEXT("/Game/Core/Inputs/IMC_SingleInput"));
 	if (IMCObject.Succeeded()) { InputMapping = IMCObject.Object; }
+
+	// Find the UI object and store it
+	static ConstructorHelpers::FClassFinder<UUserWidget>UIClass(TEXT("/Game/Core/WBP_SingleInputUI"));
+	if (UIClass.Succeeded()) {
+		UE_LOG(LogTemp, Warning, TEXT("UI Found"));
+		UI = CreateWidget<USingleInputUI>(GetWorld(), UIClass.Class);
+	};
 }
 
 void ASingleInputPlayerController::BeginPlay()
@@ -44,12 +52,11 @@ void ASingleInputPlayerController::BeginPlay()
 	// Set the mouse viewable on screen
 	bShowMouseCursor = true;
 
-	/// Attempt One - Spawn Character, then set
-	// Spawn this controllers Character
-	//OwnedCharacter = GetWorld()->SpawnActor<ASingleInputPlayer>(ASingleInputPlayer::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator());
-	//if (OwnedCharacter) {
-		//SetViewTargetWithBlend(OwnedCharacter, 0.5f);
-	//}
+	// Add the UI to thew viewport
+	if (UI) {
+		UI->AddToViewport();
+		UI->SingleInputPerson = AICharacter;
+	}
 }
 
 void ASingleInputPlayerController::SetupInputComponent()

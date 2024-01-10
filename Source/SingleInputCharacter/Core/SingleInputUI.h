@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
 
 #include "SingleInputUI.generated.h"
 
@@ -18,6 +19,9 @@ public:
 	virtual void NativeConstruct() override;
 
 	virtual void SynchronizeProperties() override;
+
+	UFUNCTION()
+	void OnInventoryButtonRelased();
 
 protected:
 	/// -- Button Functions --
@@ -37,6 +41,14 @@ public:
 	class ASingleInputPerson* SingleInputPerson = nullptr;
 
 	/// -- Components --
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UWidgetSwitcher* UISwitcher = nullptr;
+
+	/// -- UI States
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	class UInventoryUI* InventoryState = nullptr;
+
+	/// -- In Game Components
 	// Button to toggle the camera angle
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	UButton* CameraAngleButton = nullptr;

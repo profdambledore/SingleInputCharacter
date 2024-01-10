@@ -3,6 +3,7 @@
 
 #include "Core/SingleInputUI.h"
 #include "Core/SingleInputPerson.h"
+#include "UI/InventoryUI.h"
 
 void USingleInputUI::NativeConstruct()
 {
@@ -17,6 +18,8 @@ void USingleInputUI::NativeConstruct()
 
 	// Anti-Clockwise Rotate Button
 	ACRotateCameraButton->OnReleased.AddDynamic(this, &USingleInputUI::OnACRotateCameraButtonReleased);
+
+	InventoryState->MainUI = this;
 }
 
 void USingleInputUI::SynchronizeProperties()
@@ -42,5 +45,13 @@ void USingleInputUI::OnACRotateCameraButtonReleased()
 {
 	if (SingleInputPerson) {
 		SingleInputPerson->RotateCameraByStep(false);
+	}
+}
+
+void USingleInputUI::OnInventoryButtonRelased()
+{
+	if (SingleInputPerson) {
+		InventoryState->SynchronizeProperties();
+		UISwitcher->SetActiveWidgetIndex(1);
 	}
 }

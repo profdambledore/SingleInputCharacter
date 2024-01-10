@@ -78,7 +78,7 @@ void ASingleInputPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InputConfig->InputPlayerAction, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::PlayerInteract);
 
 		// Bind any test actions
-		EnhancedInputComponent->BindAction(InputConfig->Debug_CameraRotate, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::DEBUG_RotateCamera);
+		EnhancedInputComponent->BindAction(InputConfig->Debug_CameraRotate, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::DEBUG_Inventory);
 		EnhancedInputComponent->BindAction(InputConfig->Debug_CameraAngle, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::DEBUG_AngleCamera);
 	}
 }
@@ -114,6 +114,14 @@ void ASingleInputPlayerController::DEBUG_AngleCamera(const FInputActionValue& Va
 		AICharacter->SwapCameraAngle();
 	}
 }
+
+void ASingleInputPlayerController::DEBUG_Inventory(const FInputActionValue& Value)
+{
+	if (bDebug && AICharacter) {
+		UI->OnInventoryButtonRelased();
+	}
+}
+
 
 ///
 /// https://unrealistic.dev/posts/binding-input-in-c

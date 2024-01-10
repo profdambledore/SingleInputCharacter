@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
 
+#include "Core/Data/ItemData.h"
+
 #include "SingleInputPerson.generated.h"
 
 UCLASS()
@@ -54,6 +56,10 @@ public:
 	// Camera Spring Arm
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* CameraSpringArm = nullptr;
+
+	// Inventory Component
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class USingleInputInventory* InventoryComponent;
 
 	// Controller Reference
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref")

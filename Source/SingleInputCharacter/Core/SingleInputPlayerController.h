@@ -37,6 +37,9 @@ protected:
 	// Debug - Change camera pitch between the two bounds
 	void DEBUG_AngleCamera(const FInputActionValue& Value);
 
+	// Debug - Open the inventory screen
+	void DEBUG_Inventory(const FInputActionValue& Value);
+
 
 protected:
 	/// -- Player --

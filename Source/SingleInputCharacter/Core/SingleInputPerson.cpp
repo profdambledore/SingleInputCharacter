@@ -2,6 +2,7 @@
 
 #include "Core/SingleInputPerson.h"
 #include "Core/SingleInputAIController.h"
+#include "Core/SingleInputInventory.h"
 
 // Sets default values
 ASingleInputPerson::ASingleInputPerson()
@@ -15,6 +16,9 @@ ASingleInputPerson::ASingleInputPerson()
 	CameraSpringArm->SetupAttachment(GetCapsuleComponent(), "");
 	CameraSpringArm->bInheritPitch = false; CameraSpringArm->bInheritYaw = false; CameraSpringArm->bInheritRoll = false;
 
+	// Inventory
+	InventoryComponent = CreateDefaultSubobject<USingleInputInventory>(TEXT("Inventory Component"));
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -27,6 +31,12 @@ void ASingleInputPerson::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Test - Add items to thhe inventory
+	InventoryComponent->AddItemToArray(FItemData("SIP_TestWeapn", "Test Item", EItemType::Weapon, 32, 20));
+	InventoryComponent->AddItemToArray(FItemData("SIP_TestArmour", "Test Item", EItemType::Armour, 32, 20));
+	InventoryComponent->AddItemToArray(FItemData("SIP_TestMaterial", "Test Item", EItemType::Material, 32,200));
+	
+
 }
 
 // Called every frame
@@ -64,7 +74,7 @@ void ASingleInputPerson::RotateCameraByStep(bool bRotateClockwise)
 	else {
 		CurrentStep++;
 	}
-	CameraSpringArm->SetRelativeRotation(FRotator(CameraSpringArm->GetRelativeRotation().Pitch, CurrentStep * CurrentStep, 0.0f));
+	CameraSpringArm->SetRelativeRotation(FRotator(CameraSpringArm->GetRelativeRotation().Pitch, CurrentStep * RotationStep, 0.0f));
 }
 
 void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirection)

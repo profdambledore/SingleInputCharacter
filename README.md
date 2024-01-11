@@ -2,7 +2,7 @@
  A Unreal Engine Character desgined around using one input - only a mouse or a single finger
 
  <p align="center">
-  <img src="" />
+  <img src="https://github.com/profdambledore/SingleInputCharacter/blob/main/Images/v05-001.png" />
 </p>
 
 In this project, I am creating a complex character with all of the features required from a modern game ‑ such as inventory with sorting, combat, crafting, simple movement and more ‑ while dealing with the limitation of only having one input device of mouse and the left mouse button.
@@ -14,37 +14,36 @@ In this project, I am creating a complex character with all of the features requ
   ## Latest Update
 <table><tr><td valign="center" width="100%">
  
-### v0.4 - Alphabetical Sorting
+### v0.5 - Alphabetical Sorting
 
- -- ItemData --
+ -- Assets --
  
-Added EInventorySortType, which is used to choose or store how the player's inventory should be sorted
-Added InventoryOrder, used to store the order that this item was added to the inventory
-Added a new constructor that allows an argument for InventoryOrder
+Added Synty PolygonApocalypse assets (gitignored)
 
  -- SingleInputInventory --
  
-Updated AddItemToArray to use InventoryOrder
- - Currently uses the array length, should be updated to a const int that is incremented each time a new item is added
-Added SortInventoryAlphabetically function
- - Goes through the array, using FString::Compare to sort alphabetically
-Added SortInventory
- - Take in EInventorySortType to change how the inventory is sorted, then sorts
-Added ReSortInventory function
- - Simply calls SortInventory with the InventorySort as the argument
+Updated InventoryOrder to use a property rather than the array length
+ - I incorrectly stated that you could use a const to increment.  Instead, I am using a non const integar.
+Added more comments
+Added Newest and Oldest selections to SortInventory
+Implemented SortInventoryNewest and SortInventoryOldest
+ - Basically do the same things, except Newest reverses it's output array before setting the inventory
 
- -- SingleInputPerson --
- 
-Modified the test values that are added to the array
+-- SingleInputPerson --
+
+Updated mesh position
+Added a character skeletal mesh from PolygonApocalypse
 
  -- InventoryUI --
  
-Added a button to sort the inventory, as well as a delegate bind to update the sorting type then call SyncronizeProperties
-Updated SyncronizeProperties to call ReSortInventory when called
+Implemented ClearDescriptionBox, which resets the description box
+ - This is done as when the TileView is sorted, every element is destroyed and recreated with ClearListView
+ - Also sets CurrentSelectedItem to nullptr
+Added buttons to sort by Newest and Oldest (see Image/05-001.png)
 </td></tr></tr></table> 
 
  ## Assets Used:
-
+- PolygonApocalypse by SyntyStudios
 
 ## Programs Used:
 - Unreal Engine 5.2 - Game Engine.

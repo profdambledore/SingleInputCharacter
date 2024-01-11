@@ -23,6 +23,9 @@ void UInventoryUI::NativeConstruct()
 
 	// Sort Materials Button Release
 	SortMaterialsButton->OnReleased.AddDynamic(this, &UInventoryUI::OnSortMaterialsButtonReleased);
+
+	// Sort Materials Button Release
+	InventSortAlphabeticalButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortAlphabeticalReleased);
 }
 
 void UInventoryUI::SynchronizeProperties()
@@ -31,6 +34,7 @@ void UInventoryUI::SynchronizeProperties()
 
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
+		MainUI->SingleInputPerson->InventoryComponent->ReSortInventory();
 		if (bSortedByAll) {
 			SortInventoryByAll();
 		}
@@ -48,6 +52,12 @@ void UInventoryUI::SortInventoryByAll()
 	bSortedByAll = true;
 	UpdateListViewWithItems(MainUI->SingleInputPerson->InventoryComponent->GetInventoryData());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
+}
+
+void UInventoryUI::OnInventSortAlphabeticalReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
+	SynchronizeProperties();
 }
 
 void UInventoryUI::OnSortWeaponsButtonReleased()

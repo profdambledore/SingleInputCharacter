@@ -16,6 +16,16 @@ FItemData::FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, 
 	MaxStack = InMaxStack;
 }
 
+FItemData::FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack, int InInventOrder)
+{
+	ID = InID;
+	Name = InName;
+	Type = InType;
+	Amount = InAmount;
+	MaxStack = InMaxStack;
+	InventoryOrder = InInventOrder;
+}
+
 FItemData::~FItemData()
 {
 }

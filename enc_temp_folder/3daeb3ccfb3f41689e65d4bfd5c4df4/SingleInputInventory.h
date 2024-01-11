@@ -46,8 +46,6 @@ protected:
 	void SortInventoryAlphabetically();
 
 public:	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
-	TEnumAsByte<EInventorySortType> InventorySort = EInventorySortType::Newest;
 
 protected:
 	/// -- Inventory Data --
@@ -55,6 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
 	TArray<FItemData> InventoryItems;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
+	TEnumAsByte<EInventorySortType> InventorySort = EInventorySortType::Alphabetically;
 		
 };

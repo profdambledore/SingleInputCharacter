@@ -35,7 +35,7 @@ void ASingleInputPerson::BeginPlay()
 	InventoryComponent->AddItemToArray(FItemData("SIP_TestWeapn", "Meme Item", EItemType::Weapon, 32, 20));
 	InventoryComponent->AddItemToArray(FItemData("SIP_TestArmour", "YES Item", EItemType::Armour, 32, 20));
 	InventoryComponent->AddItemToArray(FItemData("SIP_TestMaterial", "Dore Item", EItemType::Material, 32,200));
-	//InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
+	InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
 	
 
 }

@@ -44,14 +44,14 @@ void USingleInputInventory::AddItemToArray(FItemData NewItem)
 		if (InventoryItems[i].ID == NewItem.ID && NewItem.Amount > 0) {
 			if (!InventoryItems[i].GetItemAtMaxStack()) {
 				NewItem.Amount = InventoryItems[i].AddItems(NewItem);
-				UE_LOG(LogTemp, Warning, TEXT("sii : %i"), InventoryItems[i].Amount)
+				//UE_LOG(LogTemp, Warning, TEXT("sii : %i"), InventoryItems[i].Amount)
 			}
 		}
 	}
 
 	// If some amount still exists, create a new index with the NewItem data without an amount and recurse
 	if (NewItem.Amount > 0) {
-		InventoryItems.Add(FItemData(NewItem.ID, NewItem.Name, NewItem.Type, 0, NewItem.MaxStack));
+		InventoryItems.Add(FItemData(NewItem.ID, NewItem.Name, NewItem.Type, 0, NewItem.MaxStack, InventoryItems.Num()));
 		AddItemToArray(NewItem);
 	}
 }
@@ -79,5 +79,62 @@ void USingleInputInventory::RemoveItemFromArray(FItemData ItemToRemove)
 			}
 		}
 	}
+}
+
+void USingleInputInventory::SortInventory(TEnumAsByte<EInventorySortType> SortBy)
+{
+	if (SortBy == EInventorySortType::Alphabetically) {
+		InventorySort = SortBy;
+		SortInventoryAlphabetically();
+	}
+}
+
+void USingleInputInventory::ReSortInventory()
+{
+	SortInventory(InventorySort);
+}
+
+void USingleInputInventory::SortInventoryAlphabetically()
+{
+	TArray<FItemData> SortedArray;
+
+	// For each item in the player's inventory
+	for (FItemData i : InventoryItems) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the strings
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				int comparisonResult = i.Name.Compare(SortedArray[j].Name, ESearchCase::IgnoreCase);
+				UE_LOG(LogTemp, Warning, TEXT("result is %i"), comparisonResult);
+
+				// If they are the same
+				if (comparisonResult == 0) {
+					// Insert i after j
+					SortedArray.Insert(i, j+ 1);
+					UE_LOG(LogTemp, Warning, TEXT("adding %s"), *i.Name);
+					break;
+				}
+				else if (comparisonResult <= -1) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				else if (comparisonResult >= 1) {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+	InventoryItems = SortedArray;
 }
 

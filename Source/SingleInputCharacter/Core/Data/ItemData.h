@@ -17,6 +17,13 @@ enum EItemType
 };
 
 
+UENUM(BlueprintType, Category = "Items")
+enum EInventorySortType
+{
+	Alphabetically UMETA(DisplayName = "Alphabetically"),
+	Newest UMETA(DisplayName = "Newest"),
+	Oldest UMETA(DisplayName = "Oldest")
+};
 
 USTRUCT(BlueprintType, Category = "Items")
 struct SINGLEINPUTCHARACTER_API FItemData : public FTableRowBase
@@ -39,9 +46,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxStack;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int InventoryOrder;
+
 	// Constructors / Destructors
 	FItemData();
 	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack);
+	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack, int InInventOrder);
 	~FItemData();
 
 	// Additional Functions

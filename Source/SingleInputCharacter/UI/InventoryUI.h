@@ -38,6 +38,11 @@ public:
 	void UpdateDescriptionBox(UInventorySlot* NewSlot);
 
 protected:
+	/// -- Inventory Sorting --
+	// Button OnRelease to sort the inventory alphabetically
+	UFUNCTION()
+	void OnInventSortAlphabeticalReleased();
+
 	/// -- Item List -- 
 	// Button to sort the inventory and display only weapons
 	UFUNCTION()
@@ -83,8 +88,12 @@ public:
 
 	// Button used to drop the selected item
 
+	// Inventory Sorting
+	// Button to sort the inventory alphabetically
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	UButton* InventSortAlphabeticalButton = nullptr;
 
-	// Sorting
+	// Tile ViewSorting
 	// Text Box to show how the inventory is currently being sorted
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* CurrentSortText = nullptr;

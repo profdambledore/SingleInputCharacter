@@ -29,7 +29,9 @@ void UInventoryUI::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
+	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
+		MainUI->SingleInputPerson->InventoryComponent->ReSortInventory();
 		if (bSortedByAll) {
 			SortInventoryByAll();
 		}
@@ -43,9 +45,15 @@ void UInventoryUI::SynchronizeProperties()
 /// -- Sorting --
 void UInventoryUI::SortInventoryByAll()
 {
+	// Update the TileView with all items in the inventory
 	bSortedByAll = true;
 	UpdateListViewWithItems(MainUI->SingleInputPerson->InventoryComponent->GetInventoryData());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
+}
+
+void UInventoryUI::OnInventSortAlphabeticalReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
 }
 
 void UInventoryUI::OnSortWeaponsButtonReleased()
@@ -65,9 +73,20 @@ void UInventoryUI::OnSortMaterialsButtonReleased()
 
 void UInventoryUI::SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort)
 {
+	// Update sorted properties
 	bSortedByAll = false;
 	SortedBy = TypeToSort;
 
+	// Sort the inventory and store all items matching the selected type
+	TArray<FItemData> SortedItems;
+	for (FItemData i : MainUI->SingleInputPerson->InventoryComponent->GetInventoryData()) {
+		if (i.Type == TypeToSort) {
+			SortedItems.Add(i);
+		}
+	}
+
+	// Then update the list and CurrentSortText
+	UpdateListViewWithItems(SortedItems);
 	CurrentSortText->SetText(FText::FromName(UEnum::GetValueAsName(TypeToSort)));
 }
 

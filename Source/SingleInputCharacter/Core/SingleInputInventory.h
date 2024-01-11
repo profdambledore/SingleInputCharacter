@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
+#include "Algo/Reverse.h"
+
 #include "Core/Data/ItemData.h"
 
 #include "SingleInputInventory.generated.h"
@@ -45,7 +47,15 @@ protected:
 	// Called to sort the inventory in alphabetical order
 	void SortInventoryAlphabetically();
 
+	// Called to sort the inventory by newest item first
+	void SortInventoryNewest();
+
+	// Called to sort the inventory by newest item first
+	void SortInventoryOldest();
+
 public:	
+	/// -- Inventory Data --
+	// Enum to designate how the inventory is currently sorted / when resorted
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
 	TEnumAsByte<EInventorySortType> InventorySort = EInventorySortType::Newest;
 
@@ -55,6 +65,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
 	TArray<FItemData> InventoryItems;
 
+	int InventoryOrder = 0;
 
 		
 };

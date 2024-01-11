@@ -34,14 +34,24 @@ public:
 	void SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort);
 
 	/// -- Description Box --
+	// Called to update the description box to the data in the NewSlot
 	UFUNCTION(BlueprintCallable)
 	void UpdateDescriptionBox(UInventorySlot* NewSlot);
+
+	// Called to clear the description box and clear the SelectedSlot
+	void ClearDescriptionBox();
 
 protected:
 	/// -- Inventory Sorting --
 	// Button OnRelease to sort the inventory alphabetically
 	UFUNCTION()
 	void OnInventSortAlphabeticalReleased();
+
+	UFUNCTION()
+	void OnInventSortNewestReleased();
+
+	UFUNCTION()
+	void OnInventSortOldestReleased();
 
 	/// -- Item List -- 
 	// Button to sort the inventory and display only weapons
@@ -92,6 +102,14 @@ public:
 	// Button to sort the inventory alphabetically
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	UButton* InventSortAlphabeticalButton = nullptr;
+
+	// Button to sort the inventory by newest item first
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	UButton* InventSortNewestButton = nullptr;
+
+	// Button to sort the inventory by oldest item first
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	UButton* InventSortOldestButton = nullptr;
 
 	// Tile ViewSorting
 	// Text Box to show how the inventory is currently being sorted

@@ -44,14 +44,14 @@ void USingleInputInventory::AddItemToArray(FItemData NewItem)
 		if (InventoryItems[i].ID == NewItem.ID && NewItem.Amount > 0) {
 			if (!InventoryItems[i].GetItemAtMaxStack()) {
 				NewItem.Amount = InventoryItems[i].AddItems(NewItem);
-				//UE_LOG(LogTemp, Warning, TEXT("sii : %i"), InventoryItems[i].Amount)
 			}
 		}
 	}
 
 	// If some amount still exists, create a new index with the NewItem data without an amount and recurse
 	if (NewItem.Amount > 0) {
-		InventoryItems.Add(FItemData(NewItem.ID, NewItem.Name, NewItem.Type, 0, NewItem.MaxStack, InventoryItems.Num()));
+		InventoryItems.Add(FItemData(NewItem.ID, NewItem.Name, NewItem.Type, 0, NewItem.MaxStack, InventoryOrder));
+		InventoryOrder++;
 		AddItemToArray(NewItem);
 	}
 }
@@ -67,6 +67,9 @@ void USingleInputInventory::RemoveItemFromArray(FItemData ItemToRemove)
 		}
 	}
 
+	// If there is enough to remove, then iterate over the array finding all matching IDs
+	// Remove amounts of items from each ID until either enough is removed or that index is now empty
+	// On index empty, remove it from the array
 	if (AmountInInvent >= ItemToRemove.Amount) {
 		for (int i = 0; i < InventoryItems.Num(); i++) {
 			if (InventoryItems[i].ID == ItemToRemove.ID && ItemToRemove.Amount > 0) {
@@ -83,14 +86,24 @@ void USingleInputInventory::RemoveItemFromArray(FItemData ItemToRemove)
 
 void USingleInputInventory::SortInventory(TEnumAsByte<EInventorySortType> SortBy)
 {
+	// If the inputted sort is Alphabetically, then call SortInventoryAlphabetically
 	if (SortBy == EInventorySortType::Alphabetically) {
 		InventorySort = SortBy;
 		SortInventoryAlphabetically();
+	}
+	else if (SortBy == EInventorySortType::Newest) {
+		InventorySort = SortBy;
+		SortInventoryNewest();
+	}
+	else if (SortBy == EInventorySortType::Oldest) {
+		InventorySort = SortBy;
+		SortInventoryOldest();
 	}
 }
 
 void USingleInputInventory::ReSortInventory()
 {
+	// Simply sort the inventory with the current setting
 	SortInventory(InventorySort);
 }
 
@@ -119,11 +132,13 @@ void USingleInputInventory::SortInventoryAlphabetically()
 					UE_LOG(LogTemp, Warning, TEXT("adding %s"), *i.Name);
 					break;
 				}
+				// If they are less (i is earlier on in the alphabet)
 				else if (comparisonResult <= -1) {
 					// Insert i after j
 					SortedArray.Insert(i, j);
 					break;
 				}
+				// If they are lated (i is later on in the alphabet)
 				else if (comparisonResult >= 1) {
 					if (j + 1 >= SortedArray.Num()) {
 						// Insert i at the end of the array
@@ -135,6 +150,83 @@ void USingleInputInventory::SortInventoryAlphabetically()
 			}
 		}
 	}
+
+	// Update the inventory with the new sorted items
+	InventoryItems = SortedArray;
+}
+
+void USingleInputInventory::SortInventoryNewest()
+{
+	TArray<FItemData> SortedArray;
+
+	// For each item in the player's inventory
+	for (FItemData i : InventoryItems) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the InventoryOrder
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				// If they are less (i is earlier on in the alphabet)
+				if (i.InventoryOrder <= SortedArray[j].InventoryOrder) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				// If they are lated (i is later on in the alphabet)
+				else {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+	// Update the inventory with the new sorted items
+	Algo::Reverse(SortedArray);
+	InventoryItems = SortedArray;
+}
+
+void USingleInputInventory::SortInventoryOldest()
+{
+	TArray<FItemData> SortedArray;
+
+	// For each item in the player's inventory
+	for (FItemData i : InventoryItems) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the InventoryOrder
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				// If they are less (i is earlier on in the alphabet)
+				if (i.InventoryOrder <= SortedArray[j].InventoryOrder) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				// If they are lated (i is later on in the alphabet)
+				else {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+	// Update the inventory with the new sorted items
 	InventoryItems = SortedArray;
 }
 

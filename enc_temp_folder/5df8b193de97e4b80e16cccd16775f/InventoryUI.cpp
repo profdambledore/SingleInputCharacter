@@ -23,6 +23,9 @@ void UInventoryUI::NativeConstruct()
 
 	// Sort Materials Button Release
 	SortMaterialsButton->OnReleased.AddDynamic(this, &UInventoryUI::OnSortMaterialsButtonReleased);
+
+	// Sort Materials Button Release
+	InventSortAlphabeticalButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortAlphabeticalReleased);
 }
 
 void UInventoryUI::SynchronizeProperties()
@@ -31,7 +34,9 @@ void UInventoryUI::SynchronizeProperties()
 
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
+		// Resort the inventory and clear the description box
 		MainUI->SingleInputPerson->InventoryComponent->ReSortInventory();
+		ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortInventoryByAll();
 		}
@@ -42,18 +47,28 @@ void UInventoryUI::SynchronizeProperties()
 	}
 }
 
-/// -- Sorting --
+/// -- Soring Inventory --
+void UInventoryUI::OnInventSortAlphabeticalReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
+	SynchronizeProperties();
+}
+
+void UInventoryUI::OnInventSortNewestReleased()
+{
+}
+
+void UInventoryUI::OnInventSortOldestReleased()
+{
+}
+
+/// -- Sorting UI --
 void UInventoryUI::SortInventoryByAll()
 {
 	// Update the TileView with all items in the inventory
 	bSortedByAll = true;
 	UpdateListViewWithItems(MainUI->SingleInputPerson->InventoryComponent->GetInventoryData());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
-}
-
-void UInventoryUI::OnInventSortAlphabeticalReleased()
-{
-	MainUI->SingleInputPerson->InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
 }
 
 void UInventoryUI::OnSortWeaponsButtonReleased()
@@ -102,4 +117,12 @@ void UInventoryUI::UpdateDescriptionBox(UInventorySlot* NewSlot)
 	// Update the description box elements
 	SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *CurrentSelectedItem->SlotItem.Name, CurrentSelectedItem->SlotItem.Amount)));
 
+}
+
+void UInventoryUI::ClearDescriptionBox()
+{
+	CurrentSelectedItem = nullptr;
+
+	// Update the description box elements
+	SelectedItemName->SetText(FText::FromString("Select an item"));
 }

@@ -7,6 +7,10 @@
 // Sets default values
 ASingleInputPerson::ASingleInputPerson()
 {
+	// Mesh
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+
 	// Cameras
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Character Spring Arm"));
 	CameraSpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
@@ -18,6 +22,10 @@ ASingleInputPerson::ASingleInputPerson()
 
 	// Inventory
 	InventoryComponent = CreateDefaultSubobject<USingleInputInventory>(TEXT("Inventory Component"));
+
+	// Find and store the test mesh
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>SMObject(TEXT("/Game/PolygonApocalypse/Meshes/Characters/SK_Chr_Biker_Male_01"));
+	if (SMObject.Succeeded()) { GetMesh()->SetSkeletalMesh(SMObject.Object); }
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;

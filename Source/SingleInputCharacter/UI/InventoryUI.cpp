@@ -26,6 +26,12 @@ void UInventoryUI::NativeConstruct()
 
 	// Sort Materials Button Release
 	InventSortAlphabeticalButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortAlphabeticalReleased);
+
+	// Sort Materials Button Release
+	InventSortNewestButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortNewestReleased);
+
+	// Sort Materials Button Release
+	InventSortOldestButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortOldestReleased);
 }
 
 void UInventoryUI::SynchronizeProperties()
@@ -34,7 +40,9 @@ void UInventoryUI::SynchronizeProperties()
 
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
+		// Resort the inventory and clear the description box
 		MainUI->SingleInputPerson->InventoryComponent->ReSortInventory();
+		ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortInventoryByAll();
 		}
@@ -45,19 +53,32 @@ void UInventoryUI::SynchronizeProperties()
 	}
 }
 
-/// -- Sorting --
+/// -- Soring Inventory --
+void UInventoryUI::OnInventSortAlphabeticalReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
+	SynchronizeProperties();
+}
+
+void UInventoryUI::OnInventSortNewestReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Newest;
+	SynchronizeProperties();
+}
+
+void UInventoryUI::OnInventSortOldestReleased()
+{
+	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Oldest;
+	SynchronizeProperties();
+}
+
+/// -- Sorting UI --
 void UInventoryUI::SortInventoryByAll()
 {
 	// Update the TileView with all items in the inventory
 	bSortedByAll = true;
 	UpdateListViewWithItems(MainUI->SingleInputPerson->InventoryComponent->GetInventoryData());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
-}
-
-void UInventoryUI::OnInventSortAlphabeticalReleased()
-{
-	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
-	SynchronizeProperties();
 }
 
 void UInventoryUI::OnSortWeaponsButtonReleased()
@@ -106,4 +127,12 @@ void UInventoryUI::UpdateDescriptionBox(UInventorySlot* NewSlot)
 	// Update the description box elements
 	SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *CurrentSelectedItem->SlotItem.Name, CurrentSelectedItem->SlotItem.Amount)));
 
+}
+
+void UInventoryUI::ClearDescriptionBox()
+{
+	CurrentSelectedItem = nullptr;
+
+	// Update the description box elements
+	SelectedItemName->SetText(FText::FromString("Select an item"));
 }

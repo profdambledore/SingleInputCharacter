@@ -44,10 +44,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	UImage* SelectItemImage = nullptr;
 
+	/// -- ItemData -- 
+	// The FItemData struct in this slot
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	FItemData SlotItem;
 
 protected:
+	/// -- References --
+	// Pointer to the InventoryUI that the owning TileListView is placed in
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	class UInventoryUI* InventoryUI = nullptr;
 };

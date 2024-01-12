@@ -25,9 +25,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/// -- Mesh Target --
+	// Called to set a new mesh as the Display's target
 	UFUNCTION()
 	void SetNewMeshTarget(UStaticMesh* InStaticMesh, USkeletalMesh* InSkelMesh, float InSpringArmLength);
 
+	// Called to clear both mesh components
 	void ClearMeshTarget();
 
 protected:
@@ -35,15 +38,20 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	/// -- Components --
+	// Static Mesh Component used to display static mesh items
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* MeshDisplay_Static = nullptr;
 
+	// Skeletal Mesh Component used to display skeletal mesh items
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* MeshDisplay_Skel = nullptr;
 
+	// Spring Arm Component used to move the display capture back from the meshes
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* DisplaySpringArm = nullptr;
 
+	// SceneCaptureComponent used to record and save the icon
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneCaptureComponent2D* DisplayCapture = nullptr;
 

@@ -12,6 +12,7 @@
 
 #include "ItemData.generated.h"
 
+// Enum denoting the type of item
 UENUM(BlueprintType, Category = "Items")
 enum EItemType
 {
@@ -20,7 +21,7 @@ enum EItemType
 	Material UMETA(DisplayName = "Material")
 };
 
-
+// Enum denoting how the inventory should be sorted
 UENUM(BlueprintType, Category = "Items")
 enum EInventorySortType
 {
@@ -29,50 +30,71 @@ enum EInventorySortType
 	Oldest UMETA(DisplayName = "Oldest")
 };
 
+// Struct holding the data of items
 USTRUCT(BlueprintType, Category = "Items")
 struct SINGLEINPUTCHARACTER_API FItemData : public FTableRowBase
 {
 public:
 	GENERATED_BODY();
 
-	// -- Item Data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/// -- Item Data --
+	// The ID of the item (this matches the row name in the data table)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
 	FName ID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The display name of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
 	FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The type of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
 	TEnumAsByte<EItemType> Type;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Amount;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The maximum amount an FItemData struct can hold.  Use -1 for infinite stacking
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
 	int MaxStack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/// -- Item Actives
+	// The current amount of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Actives")
+	int Amount;
+
+	// The order this item is placed in an inventory (useful for sorting by newest/oldest)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Actives")
 	int InventoryOrder;
 
-	// -- Item Display
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/// -- Item Display --
+	// The static mesh of the item (if valid SkelMesh won't be used)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
 	UStaticMesh* StaticMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The skeletal mesh of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
 	USkeletalMesh* SkelMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The icon of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
 	UTexture2D* Icon = nullptr;
 
 
-	// Constructors / Destructors
+	/// -- Constructors / Destructors --
+	// Defaults
 	FItemData();
-	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack);
-	FItemData(FItemData InItemData, int InAmount, int InInventOrder);
 	~FItemData();
 
-	// Additional Functions
+	// Constructor used to directly set the data stats
+	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack);
+
+	// Constructor to set the data stats from an existing FItemData, alongside a new amount and inventory order
+	FItemData(FItemData InItemData, int InAmount, int InInventOrder);
+
+	/// -- Additional Functions --
+	// Called to add items to an existing FItemData
 	int AddItems(FName NewItemID, int AmountToAdd);
+
+	// Called to remove items from an existing FItemData
 	int RemoveItems(int InAmount);
+
+	// Called to check if an existing FItemData's Amount is at its MaxStack
 	bool GetItemAtMaxStack();
 };

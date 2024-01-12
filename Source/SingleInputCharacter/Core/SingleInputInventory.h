@@ -28,6 +28,9 @@ public:
 	// Called to return an array of all items in the inventory
 	TArray<FItemData> GetInventoryData();
 
+	// Called to get the data of an item from the data table
+	FItemData FindItemData(FName ItemID);
+
 	// Called to add an item to the inventory
 	void AddItemToArray(FName NewItemID, int Amount);
 
@@ -40,9 +43,6 @@ public:
 	// Called to resort the inventory by the current type
 	void ReSortInventory();
 
-	// Called to get the data of an item from the data table
-	FItemData FindItemData(FName ItemID);
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -53,7 +53,7 @@ protected:
 	// Called to sort the inventory by newest item first
 	void SortInventoryNewest();
 
-	// Called to sort the inventory by newest item first
+	// Called to sort the inventory by oldest item first
 	void SortInventoryOldest();
 
 public:	
@@ -72,6 +72,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	UDataTable* ItemDataTable = nullptr;
 
+	// The current inventory order
 	int InventoryOrder = 0;
 
 		

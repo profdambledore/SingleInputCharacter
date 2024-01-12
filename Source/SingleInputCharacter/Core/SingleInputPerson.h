@@ -82,5 +82,7 @@ protected:
 	// Float to denote rotation step value
 	float RotationStep = 10;
 
+	// Int denoting the current rotation step multiplier
+	// Incremented when rotating clockwise, or decremented when counterclockwise
 	int CurrentStep = 0;
 };

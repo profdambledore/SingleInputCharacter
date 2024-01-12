@@ -8,6 +8,7 @@
 #include "Core/SingleInputInventory.h"
 #include "UI/ItemDisplay.h"
 
+// Called on construct to setup the widget
 void UInventoryUI::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -35,11 +36,13 @@ void UInventoryUI::NativeConstruct()
 	InventSortOldestButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortOldestReleased);
 }
 
+// Called to update the properties of the widget
 void UInventoryUI::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
 	// Check if the ItemDisplay is spawned.  If it isn't, spawn it
+	// This will be moved to the SingleInputPerson
 	if (!ItemDisplay) {
 		ItemDisplay = GetWorld()->SpawnActor<AItemDisplay>(AItemDisplay::StaticClass(), FVector(0.0f, 0.0f, 10000.0f), FRotator(), FActorSpawnParameters());
 	}
@@ -59,26 +62,33 @@ void UInventoryUI::SynchronizeProperties()
 	}
 }
 
-/// -- Soring Inventory --
+/// -- Inventory Sorting --
+// Button OnRelease to sort the inventory alphabetically
 void UInventoryUI::OnInventSortAlphabeticalReleased()
 {
+	// Set the sorting type to Alphabetically and then sync the widget
 	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
 	SynchronizeProperties();
 }
 
+// Button OnRelease to sort the inventory by Newest first
 void UInventoryUI::OnInventSortNewestReleased()
 {
+	// Set the sorting type to Newest and then sync the widget
 	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Newest;
 	SynchronizeProperties();
 }
 
+// Button OnRelease to sort the inventory by oldest first
 void UInventoryUI::OnInventSortOldestReleased()
 {
+	// Set the sorting type to Oldest and then sync the widget
 	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Oldest;
 	SynchronizeProperties();
 }
 
 /// -- Sorting UI --
+// Called to sort the UI by all items
 void UInventoryUI::SortInventoryByAll()
 {
 	// Update the TileView with all items in the inventory
@@ -87,21 +97,25 @@ void UInventoryUI::SortInventoryByAll()
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
 }
 
+// Button to sort the inventory and display only weapons
 void UInventoryUI::OnSortWeaponsButtonReleased()
 {
 	SortInventoryByStat(EItemType::Weapon);
 }
 
+// Button to sort the inventory and display only armour
 void UInventoryUI::OnSortArmourButtonReleased()
 {
 	SortInventoryByStat(EItemType::Armour);
 }
 
+// Button to sort the inventory and display only materials
 void UInventoryUI::OnSortMaterialsButtonReleased()
 {
 	SortInventoryByStat(EItemType::Material);
 }
 
+// Called to sort the UI by an inputted stat
 void UInventoryUI::SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort)
 {
 	// Update sorted properties
@@ -122,6 +136,7 @@ void UInventoryUI::SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort)
 }
 
 /// -- Description Box --
+// Called to update the description box to the data in the NewSlot
 void UInventoryUI::UpdateDescriptionBox(UInventorySlot* NewSlot)
 {
 	// Call the un-select function on the previous selected slot
@@ -138,8 +153,10 @@ void UInventoryUI::UpdateDescriptionBox(UInventorySlot* NewSlot)
 
 }
 
+// Called to clear the description box and clear the SelectedSlot
 void UInventoryUI::ClearDescriptionBox()
 {
+	// Clear the pointer
 	CurrentSelectedItem = nullptr;
 
 	// Update the description box elements

@@ -7,11 +7,11 @@
 // Sets default values
 ASingleInputPerson::ASingleInputPerson()
 {
-	// Mesh
+	// Setup Mesh 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
-	// Cameras
+	// Setup the spring arm for the SingleInputPlayer to attach to
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Character Spring Arm"));
 	CameraSpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	CameraSpringArm->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
@@ -20,7 +20,7 @@ ASingleInputPerson::ASingleInputPerson()
 	CameraSpringArm->SetupAttachment(GetCapsuleComponent(), "");
 	CameraSpringArm->bInheritPitch = false; CameraSpringArm->bInheritYaw = false; CameraSpringArm->bInheritRoll = false;
 
-	// Inventory
+	// Add the InventoryComponent to the character
 	InventoryComponent = CreateDefaultSubobject<USingleInputInventory>(TEXT("Inventory Component"));
 
 	// Find and store the test mesh
@@ -39,6 +39,7 @@ void ASingleInputPerson::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// For testing purposes, add items to the inventory
 	InventoryComponent->AddItemToArray("SIP_Rifle_Basic", 32);
 	InventoryComponent->AddItemToArray("SIP_Food_TunaCan", 32);
 	InventoryComponent->AddItemToArray("SIP_Armour_Basic", 32);
@@ -62,32 +63,42 @@ void ASingleInputPerson::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 }
 
+// Called to swap between the two camera angles.  Call SetCameraAngle to directly set to a certain angle.
 void ASingleInputPerson::SwapCameraAngle()
 {
+	// Store the Current Yaw
 	float NewYaw = CameraSpringArm->GetRelativeRotation().Yaw;
+	// If in overhead view, then swap to the standard angle
 	if (bInOverheadView) {
 		bInOverheadView = false;
 		CameraSpringArm->SetRelativeRotation(FRotator(StandardCameraAngle, CurrentStep * RotationStep, 0));
 	}
+	// Else, swap vice versa
 	else {
 		bInOverheadView = true;
 		CameraSpringArm->SetRelativeRotation(FRotator(OverheadCameraAngle, CurrentStep * RotationStep, 0));
 	}
 }
 
+// Called to rotate the camera by CameraRotationStep in a direction.  True if rotation is clockwise.
 void ASingleInputPerson::RotateCameraByStep(bool bRotateClockwise)
 {
+	// If the camera is to rotate counter clockwise, decrement the current step
 	if (!bRotateClockwise) {
 		CurrentStep--;
 	}
+	// Else, increment the step if the camera is to rotate clockwise
 	else {
 		CurrentStep++;
 	}
+	// Then set the rotation based on the current step * the rotation step
 	CameraSpringArm->SetRelativeRotation(FRotator(CameraSpringArm->GetRelativeRotation().Pitch, CurrentStep * RotationStep, 0.0f));
 }
 
+// Called to move the character to a position in the world
 void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirection)
 {
+	// Calculate where a trace hits and move the character to the hit location if valid 
 	FHitResult TraceHit;
 	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 4000), ECC_WorldStatic, FCollisionQueryParams(FName("DistTrace"), true));
 	AI->MoveToLocation(TraceHit.Location);

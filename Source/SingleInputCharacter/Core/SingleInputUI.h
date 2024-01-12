@@ -20,17 +20,21 @@ public:
 
 	virtual void SynchronizeProperties() override;
 
+	// Called to swap to the Inventory State
 	UFUNCTION()
 	void OnInventoryButtonRelased();
 
 protected:
 	/// -- Button Functions --
+	// Button event to swap between the two camera angles
 	UFUNCTION()
 	void OnCameraAngleButtonReleased();
 
+	// Button event to rotate the camera clockwise
 	UFUNCTION()
 	void OnCWRotateCameraButtonReleased();
 
+	// Button event to rotate the camera counterclockwise
 	UFUNCTION()
 	void OnACRotateCameraButtonReleased();
 
@@ -41,10 +45,12 @@ public:
 	class ASingleInputPerson* SingleInputPerson = nullptr;
 
 	/// -- Components --
+	// Widget switcher that allows the UI to swap between different states
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UWidgetSwitcher* UISwitcher = nullptr;
 
-	/// -- UI States
+	/// -- UI States --
+	// The inventory state
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	class UInventoryUI* InventoryState = nullptr;
 

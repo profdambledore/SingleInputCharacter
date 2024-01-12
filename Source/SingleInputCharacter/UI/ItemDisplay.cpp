@@ -45,23 +45,28 @@ void AItemDisplay::Tick(float DeltaTime)
 
 }
 
+// Called to set a new mesh as the Display's target
 void AItemDisplay::SetNewMeshTarget(UStaticMesh* InStaticMesh, USkeletalMesh* InSkelMesh, float InSpringArmLength)
 {
 	// Set the spring arm length
 	DisplaySpringArm->TargetArmLength = InSpringArmLength;
 
+	// If a StaticMesh is inputted, then setup the static mesh
 	if (InStaticMesh) {
 		MeshDisplay_Skel->SetSkeletalMesh(nullptr);
 		MeshDisplay_Static->SetStaticMesh(InStaticMesh);
 	}
+	// Else, if a SkeletalMesh is inputted, then setup the skel mesh
 	else if (InSkelMesh) {
 		MeshDisplay_Skel->SetSkeletalMesh(InSkelMesh);
 		MeshDisplay_Static->SetStaticMesh(nullptr);
 	}
 }
 
+// Called to clear both mesh components
 void AItemDisplay::ClearMeshTarget()
 {
+	// Set both of the mesh component's meshes to nullptr
 	MeshDisplay_Skel->SetSkeletalMesh(nullptr);
 	MeshDisplay_Static->SetStaticMesh(nullptr);
 }

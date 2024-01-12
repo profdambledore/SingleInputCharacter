@@ -9,14 +9,8 @@ ASingleInputPlayer::ASingleInputPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Cameras
+	// Setup the Player's Cameras
 	CharacterCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Character Camera"));
-
-	// Set the default AI Class
-	//
-
-	// Set the default camera angle
-	//
 }
 
 // Called when the game starts or when spawned

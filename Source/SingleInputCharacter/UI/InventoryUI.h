@@ -26,12 +26,15 @@ public:
 	virtual void SynchronizeProperties() override;
 
 	/// -- Item List --
+	// Called to update the list view with an array of items (in blueprint)
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateListViewWithItems(const TArray<FItemData>& NewItems);
 
+	// Called to sort the UI by all items
 	UFUNCTION()
 	void SortInventoryByAll();
 
+	// Called to sort the UI by an inputted stat
 	void SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort);
 
 	/// -- Description Box --
@@ -48,9 +51,11 @@ protected:
 	UFUNCTION()
 	void OnInventSortAlphabeticalReleased();
 
+	// Button OnRelease to sort the inventory by Newest first
 	UFUNCTION()
 	void OnInventSortNewestReleased();
 
+	// Button OnRelease to sort the inventory by oldest first
 	UFUNCTION()
 	void OnInventSortOldestReleased();
 
@@ -87,8 +92,6 @@ public:
 	UTileView* ItemTileView = nullptr;
 
 	// Description Box
-	// Image displaying the model for the selected item
-
 	// Text Box displaying the name and amount of the selected item
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* SelectedItemName = nullptr;
@@ -147,7 +150,7 @@ public:
 	UButton* CloseMenuButton = nullptr;
 
 	/// -- Properties --
-	// Enum to store how the inventory is currently sorted
+	// Enum and bool to store how the inventory is currently sorted
 	TEnumAsByte<EItemType> SortedBy;
 
 	bool bSortedByAll = true;

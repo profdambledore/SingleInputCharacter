@@ -63,6 +63,7 @@ void ASingleInputPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	// Check if the input object pointers are valid
 	if (InputConfig && InputMapping) {
 		// Get and store the local player subsystem
 		auto EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
@@ -83,41 +84,53 @@ void ASingleInputPlayerController::SetupInputComponent()
 	}
 }
 
+// Called to make the player interact with the world
 void ASingleInputPlayerController::PlayerInteract(const FInputActionValue& Value)
 {
+	// Check that the AICharacter is valid
 	if (AICharacter) {
+		// If so, deproject the mouse to world space and call MoveToLocation on the AICharacter
 		FVector MouseWorldLocation; FVector MouseWorldDirection;
 		DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
 		AICharacter->MoveToLocation(MouseWorldLocation, MouseWorldDirection);
 	}
 }
 
+// Debug - Rotate Camera by a set step
 void ASingleInputPlayerController::DEBUG_RotateCamera(const FInputActionValue& Value)
 {
+	// Check if the player is in debug mode and AICharacter is valid
 	if (bDebug && AICharacter) {
+		// Get the float value from the FInputActionValue reference
 		const float InputValue = Value.Get<float>();
 
-		UE_LOG(LogTemp, Warning, TEXT("%f"), InputValue);
-
+		// If it is less than 0, rotate counterclockwise
 		if (InputValue < 0) {
 			AICharacter->RotateCameraByStep(false);
 		}
+		// Else, if it is greater than 0 rotate clockwise
 		else if (InputValue > 0) {
 			AICharacter->RotateCameraByStep(true);
 		}
 	}
 }
 
+// Debug - Change camera pitch between the two bounds
 void ASingleInputPlayerController::DEBUG_AngleCamera(const FInputActionValue& Value)
 {
+	// Check if the player is in debug mode and AICharacter is valid
 	if (bDebug && AICharacter) {
+		// Call SwapCameraAngle in AICharacter
 		AICharacter->SwapCameraAngle();
 	}
 }
 
+// Debug - Open the inventory screen
 void ASingleInputPlayerController::DEBUG_Inventory(const FInputActionValue& Value)
 {
+	// Check if the player is in debug mode and AICharacter is valid
 	if (bDebug && AICharacter) {
+		// Call OnInventoryButtonRelase in the UI to show the inventory state
 		UI->OnInventoryButtonRelased();
 	}
 }

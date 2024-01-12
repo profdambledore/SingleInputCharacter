@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/Button.h"
+#include "Components/Image.h"
 
 #include "Core/Data/ItemData.h"
 
@@ -37,6 +38,11 @@ public:
 	// Button to update the currently selected item to this one
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	UButton* SelectItemButton = nullptr;
+
+	// Image to display the icon of the item in the slot
+	// Button to update the currently selected item to this one
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	UImage* SelectItemImage = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	FItemData SlotItem;

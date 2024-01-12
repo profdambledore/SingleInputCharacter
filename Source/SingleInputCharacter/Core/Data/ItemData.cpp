@@ -16,13 +16,17 @@ FItemData::FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, 
 	MaxStack = InMaxStack;
 }
 
-FItemData::FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack, int InInventOrder)
+FItemData::FItemData(FItemData InItemData, int InAmount, int InInventOrder)
 {
-	ID = InID;
-	Name = InName;
-	Type = InType;
+	ID = InItemData.ID;
+	Name = InItemData.Name;
+	Type = InItemData.Type;
+	MaxStack = InItemData.MaxStack;
+	StaticMesh = InItemData.StaticMesh;
+	SkelMesh = InItemData.SkelMesh;
+	Icon = InItemData.Icon;
+
 	Amount = InAmount;
-	MaxStack = InMaxStack;
 	InventoryOrder = InInventOrder;
 }
 
@@ -30,20 +34,18 @@ FItemData::~FItemData()
 {
 }
 
-int FItemData::AddItems(FItemData ItemsToAdd)
+int FItemData::AddItems(FName NewItemID, int AmountToAdd)
 {
-	UE_LOG(LogTemp, Warning, TEXT("befre = %i"), Amount);
-	if (ItemsToAdd.ID == ID) {
-		Amount = Amount + ItemsToAdd.Amount;
-		UE_LOG(LogTemp, Warning, TEXT("after = %i"), Amount);
-		if (Amount > MaxStack) {
+	if (NewItemID == ID) {
+		Amount = Amount + AmountToAdd;
+		if (Amount > MaxStack && MaxStack != -1) {
 			int ret = Amount - MaxStack;
 			Amount = MaxStack;
 			return ret;
 		}
 		return 0;
 	}
-	return ItemsToAdd.Amount;
+	return AmountToAdd;
 }
 
 int FItemData::RemoveItems(int InAmount)

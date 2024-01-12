@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 
 #include "Engine/DataTable.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/SkeletalMesh.h"
+#include "Engine/Texture2D.h"
+
 
 #include "ItemData.generated.h"
 
@@ -31,6 +35,7 @@ struct SINGLEINPUTCHARACTER_API FItemData : public FTableRowBase
 public:
 	GENERATED_BODY();
 
+	// -- Item Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ID;
 
@@ -49,14 +54,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int InventoryOrder;
 
+	// -- Item Display
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMesh* StaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMesh* SkelMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* Icon = nullptr;
+
+
 	// Constructors / Destructors
 	FItemData();
 	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack);
-	FItemData(FName InID, FString InName, TEnumAsByte<EItemType> InType, int InAmount, int InMaxStack, int InInventOrder);
+	FItemData(FItemData InItemData, int InAmount, int InInventOrder);
 	~FItemData();
 
 	// Additional Functions
-	int AddItems(FItemData ItemsToAdd);
+	int AddItems(FName NewItemID, int AmountToAdd);
 	int RemoveItems(int InAmount);
 	bool GetItemAtMaxStack();
 };

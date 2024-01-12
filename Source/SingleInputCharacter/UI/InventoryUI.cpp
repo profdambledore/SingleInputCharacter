@@ -6,6 +6,7 @@
 #include "UI/InventorySlot.h"
 #include "Core/SingleInputPerson.h"
 #include "Core/SingleInputInventory.h"
+#include "UI/ItemDisplay.h"
 
 void UInventoryUI::NativeConstruct()
 {
@@ -37,6 +38,11 @@ void UInventoryUI::NativeConstruct()
 void UInventoryUI::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
+
+	// Check if the ItemDisplay is spawned.  If it isn't, spawn it
+	if (!ItemDisplay) {
+		ItemDisplay = GetWorld()->SpawnActor<AItemDisplay>(AItemDisplay::StaticClass(), FVector(0.0f, 0.0f, 10000.0f), FRotator(), FActorSpawnParameters());
+	}
 
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
@@ -126,6 +132,9 @@ void UInventoryUI::UpdateDescriptionBox(UInventorySlot* NewSlot)
 
 	// Update the description box elements
 	SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *CurrentSelectedItem->SlotItem.Name, CurrentSelectedItem->SlotItem.Amount)));
+
+	// Update the mesh being shown in the Item Display
+	ItemDisplay->SetNewMeshTarget(CurrentSelectedItem->SlotItem.StaticMesh, CurrentSelectedItem->SlotItem.SkelMesh, 100);
 
 }
 

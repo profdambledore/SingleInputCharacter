@@ -10,7 +10,9 @@ USingleInputInventory::USingleInputInventory()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	// Get a reference to the item data table
+	ConstructorHelpers::FObjectFinder<UDataTable>DTObject(TEXT("/Game/Items/DT_ItemData"));
+	if (DTObject.Succeeded()) { ItemDataTable = DTObject.Object; }
 }
 
 
@@ -37,22 +39,29 @@ TArray<FItemData> USingleInputInventory::GetInventoryData()
 	return InventoryItems;
 }
 
-void USingleInputInventory::AddItemToArray(FItemData NewItem)
+FItemData USingleInputInventory::FindItemData(FName ItemID)
+{
+	FItemData* FoundItem = ItemDataTable->FindRow<FItemData>(ItemID, "", true);
+	return *FoundItem;
+}
+
+void USingleInputInventory::AddItemToArray(FName NewItemID, int Amount)
 {
 	// Check if there is an index that has this item already in the array
 	for (int i = 0; i < InventoryItems.Num(); i++) {
-		if (InventoryItems[i].ID == NewItem.ID && NewItem.Amount > 0) {
+		if (InventoryItems[i].ID == NewItemID && Amount > 0) {
 			if (!InventoryItems[i].GetItemAtMaxStack()) {
-				NewItem.Amount = InventoryItems[i].AddItems(NewItem);
+				Amount = InventoryItems[i].AddItems(NewItemID, Amount);
 			}
 		}
 	}
 
 	// If some amount still exists, create a new index with the NewItem data without an amount and recurse
-	if (NewItem.Amount > 0) {
-		InventoryItems.Add(FItemData(NewItem.ID, NewItem.Name, NewItem.Type, 0, NewItem.MaxStack, InventoryOrder));
+	if (Amount > 0) {
+		
+		InventoryItems.Add(FItemData(FindItemData(NewItemID), 0, InventoryOrder));
 		InventoryOrder++;
-		AddItemToArray(NewItem);
+		AddItemToArray(NewItemID, Amount);
 	}
 }
 

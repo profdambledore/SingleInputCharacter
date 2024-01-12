@@ -9,6 +9,7 @@
 #include "Components/TileView.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
+#include "Engine/DataTable.h"
 
 #include "Core/Data/ItemData.h"
 
@@ -68,9 +69,9 @@ protected:
 
 public:
 	/// -- References --
-	// Reference to the SingleInputPerson
-	//UPROPERTY(BlueprintReadOnly, Category = "References")
-	//class ASingleInputPerson* SingleInputPerson = nullptr;
+	// Reference to the ItemDisplay
+	UPROPERTY(BlueprintReadOnly, Category = "References")
+	class AItemDisplay* ItemDisplay = nullptr;
 
 	// Pointer to the SingleInputUI
 	UPROPERTY(BlueprintReadOnly, Category = "References")

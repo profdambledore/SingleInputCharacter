@@ -39,10 +39,10 @@ void ASingleInputPerson::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Test - Add items to thhe inventory
-	InventoryComponent->AddItemToArray(FItemData("SIP_TestWeapn", "Meme Item", EItemType::Weapon, 32, 20));
-	InventoryComponent->AddItemToArray(FItemData("SIP_TestArmour", "YES Item", EItemType::Armour, 32, 20));
-	InventoryComponent->AddItemToArray(FItemData("SIP_TestMaterial", "Dore Item", EItemType::Material, 32,200));
+	InventoryComponent->AddItemToArray("SIP_Rifle_Basic", 32);
+	InventoryComponent->AddItemToArray("SIP_Food_TunaCan", 32);
+	InventoryComponent->AddItemToArray("SIP_Armour_Basic", 32);
+
 	//InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
 	
 

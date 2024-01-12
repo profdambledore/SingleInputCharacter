@@ -29,7 +29,7 @@ public:
 	TArray<FItemData> GetInventoryData();
 
 	// Called to add an item to the inventory
-	void AddItemToArray(FItemData NewItem);
+	void AddItemToArray(FName NewItemID, int Amount);
 
 	// Called to remove an item from the inventory
 	void RemoveItemFromArray(FItemData ItemToRemove);
@@ -39,6 +39,9 @@ public:
 
 	// Called to resort the inventory by the current type
 	void ReSortInventory();
+
+	// Called to get the data of an item from the data table
+	FItemData FindItemData(FName ItemID);
 
 protected:
 	// Called when the game starts
@@ -64,6 +67,10 @@ protected:
 	// Array to hold all data about the players items
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
 	TArray<FItemData> InventoryItems;
+
+	// Data Table of all items
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	UDataTable* ItemDataTable = nullptr;
 
 	int InventoryOrder = 0;
 

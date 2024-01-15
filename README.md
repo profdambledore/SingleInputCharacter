@@ -14,101 +14,87 @@ In this project, I am creating a complex character with all of the features requ
   ## Latest Update
 <table><tr><td valign="center" width="100%">
  
-### v0.6 - Inventory Visuals and Slight Item Rework
+### v0.7 - Items and AI
+-- ParentItem --
 
--- Item Display --
+Added superclass, used by all item types (weapon, armour, common)
+Added virtual class SetupItem, which is to be overridden in the child classes
+Added an AActor pointer to the item's owner
+- This is so when it is equipped, if it has an owner the item cannot be accidentally clicked by the player, or they cannot start picking up an item in the enemies hands
 
-Item Display is used to render a 3D model of the item when selected in the inventory
- - Later will also be used by crafting
+Added FItemData struct, for holding the item data
 
-Added Components
- - MeshDisplay_Static is used for Static meshes, while Skel is used for skeletal meshes
- - DisplaySpringArm has the DisplayCapture attached to it.
-   
-Implemented SetNewMeshTarget function
- - Displays the inputted static or skeletal mesh - if two meshes are somehow inputted only the static mesh will be shown
- - Also allows the spring arm length to be modified to the mesh
-   
-Also implemented the ClearMeshTarget function, which simply clears any meshes currently set.
-Added CanvasRenderTarget CRT_ItemDisplay, used to show the output of the ItemDisplay
-Added Material M_ItemDisplay, used to convert the output to a user interface material
- - Utilizes a OneMinus and a Multiply to remove the background of the capture
- - See Images/v06-002.png
+-- CommonItem --
 
+CommonItem is a subclass of ParentItem
+Added a static mesh component, which is setup in the constructor
+Overrides SetupItem, which simply sets the ItemData with the argument inputted then sets the static mesh with the one in the item
 
- -- InventoryUI --
- 
-Added a pointer to the ItemDisplay spawned by the UI
- - Will be updated to be spawned by the SingleInputPerson, so multiple menus can use the ItemDisplay
+-- ItemData --
 
-Now calls SetNewMeshTarget when the description box is updated
+Added EContextStat, used by items to change what stat is associated with them (damage for weapons, defence for armour for example)
+Added EContextStat StatType to FItemData;
+Added int StatAmount to FItemData, used to display the amount of the context stat this item has
+Added FString Desc, used to display a description of an item
+Added TSubclassOf<AParentItem> Class, used to spawn a class of the item when needed
+Added TArray of FStrings UpgradeTags, used to add upgrades to inventory items
 
+-- SingleInputPlayerController --
 
- -- InventorySlot --
- 
-Added SelectItemImage Image component, used to display a Material Instance of the item's icon
- - See v06-001.png
+Updated the location of the UI class
 
+-- SingleInputAIController --
 
- -- SingleInputPerson --
- 
-Updated how the test items are inputted into the inventory
+Added a BehaviorTreeComponent and a Blackboard component, used by the BehaviorTree to control the pawn
+Added a pointer to the current BehaviorTree
+Added OnPossess which overrides from AIController
+- Called when this controller possesses a new pawn
+- On possession, Initialize the set blackboard, update the Blackboard value of "SelfActor" with the new pawn and start the tree.
 
+Implemented function MoveState, which updates the Blackboard values to change the AI to their MoveState
+Implemented function PickupItemState, which updates the Blackboard values to change the AI to their PickupItemState
 
- -- SingleInputInventory --
- 
-Reworked how items are added to the inventory
- - No longer takes in the FItemData, instead takes in an ItemID and an amount
- - Now has a pointer to the ItemDataTable
- - When a new item is added to the inventory the ID is queried in the data table, returning the matching row
- - The data from this row is added to the inventory, rather than the inputted struct
-Implemented FindItemData function, used to search the data table asset.
+-- SingleInputPerson --
 
+Removed test items added on BeginPlay
+Updated MoveToLocation with the new AI functions
 
- -- ItemData --
- 
-Added Item Display section
- - Static/SkeletalMesh properties are used for the item's mesh
- - Icon is used for the display picture in the UI
-Updated constructors
- - Now only takes in a full struct alongside the amount and inventory order
-Updated AddItems
- - Now only requires an ID alongside the amount to add, rather that a whole struct
+-- SingleInputInventory --
 
+Made AddItemToArray callable in BluePrints
 
- -- Prototyping --
- 
-Added BP prototype of ItemDisplay
+-- Prototype --
 
+Prototyped how the AI for the person would work with PROTO_AICont, PROTO_BT and PROTO_TaskMoveLoc
 
- -- DT_ItemData --
- 
-Updated Data Table with static/skeletal meshes and icons
+-- AI --
 
+Added BT_Player and BB_Player assets
+- Currently, BT_Player has two paths, a Move path and a Pickup path chosen based on the current AI state
+- In state Move, the AI simply moves to the set TargetLocation. Once they reach their destination the state is cleared
+- In state Pickup, the AI moves to the item, then collects the item. Again after the item is collected the state is cleared
+- The Blackboard has 4 keys, with each being sorted based on which state uses them
+- See Images/v07-001.png and Images/v07-002.png
+  
+Added Decorator tasks, but they will be removed as they are not used
+- Now using the Blackboard decorator types, as they can query strings
+  
+Added BTTask_ClearState, which simply sets the inputted string key to "" when called
+- See Images/v07-003.png
+  
+Added BTTask_CollectPickup, which adds the item to the AI pawn's inventory and calls pickup on the item
+- See Images/v07-004.png
 
- -- WBP_InventorySlot --
- 
-Updated OnListItemObjectSet event to now set a new DynamicMaterialInstance of M_Icon_Ins on the SelectItemImage Image component, then update the IconTexture parameter with the icon from ItemData
- - See Images/06-003.png
+-- Inputs --
 
+Updated IMC_SingleInput to now use a Pulse type instead of Hold type
+- Hold fires each frame after a duration, while Pulse has a delay between inputs
 
--- WS_Inventory --
-Updated the SelectedItemImage to now use the M_ItemDisplay material
- - Also see Images/v06-001.png
+-- Structure --
+
+Updated BP folder structure to better resemble the one featured in https://github.com/Allar/ue5-style-guide
 
 
- -- IconCreation --
-Added a EditorUtility object to create images of either static or skeletal meshes from the editor
- - When the Scripted Asset Action is called, it spawns a BP_IconCreation actor into the world, sets one of its mesh components (depending on if it is a static or skeletal mesh asset).
- - After a delay, the Render Target creates a static texture of the mesh spawned in the world
- - The IconCreation is then destroyed.
- - See Images/v06-004.png to Images/v06-007.png
- -- Modified from Aulden Carter's 'Generating Images From Meshes in UE5' (https://www.youtube.com/watch?v=_IHbHPnp_sc) to use both static and skeletal meshes
-
-
- -- Icons --
- 
-Added icons for the items used in the data table, created via the IconCreation tool
 </td></tr></tr></table> 
 
  ## Assets Used:

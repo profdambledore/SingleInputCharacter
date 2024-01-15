@@ -3,6 +3,7 @@
 #include "Core/SingleInputPerson.h"
 #include "Core/SingleInputAIController.h"
 #include "Core/SingleInputInventory.h"
+#include "Core/ParentItem.h"
 
 // Sets default values
 ASingleInputPerson::ASingleInputPerson()
@@ -40,9 +41,9 @@ void ASingleInputPerson::BeginPlay()
 	Super::BeginPlay();
 	
 	// For testing purposes, add items to the inventory
-	InventoryComponent->AddItemToArray("SIP_Rifle_Basic", 32);
-	InventoryComponent->AddItemToArray("SIP_Food_TunaCan", 32);
-	InventoryComponent->AddItemToArray("SIP_Armour_Basic", 32);
+	//InventoryComponent->AddItemToArray("SIP_Rifle_Basic", 32);
+	//InventoryComponent->AddItemToArray("SIP_Food_TunaCan", 32);
+	//InventoryComponent->AddItemToArray("SIP_Armour_Basic", 32);
 
 	//InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
 	
@@ -100,7 +101,19 @@ void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirectio
 {
 	// Calculate where a trace hits and move the character to the hit location if valid 
 	FHitResult TraceHit;
-	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 4000), ECC_WorldStatic, FCollisionQueryParams(FName("DistTrace"), true));
-	AI->MoveToLocation(TraceHit.Location);
+	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 4000), ECC_WorldDynamic, FCollisionQueryParams(FName("DistTrace"), true));
+
+	// Compare what the trace hit
+	// If the trace hit a item, check that it doesn't have a owner already
+	if (TraceHit.GetActor()->IsA(AParentItem::StaticClass())) {
+		AParentItem* HitItem = Cast<AParentItem>(TraceHit.GetActor());
+		if (HitItem->Owner == nullptr) {
+			// Move to the item and pick it up
+			AI->PickupItemState(HitItem);
+		}
+	}
+	else {
+		AI->MoveState(TraceHit.Location);
+	}
 }
 

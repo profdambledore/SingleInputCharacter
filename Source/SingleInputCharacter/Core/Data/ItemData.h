@@ -21,6 +21,15 @@ enum EItemType
 	Material UMETA(DisplayName = "Material")
 };
 
+// Enum denoting the context stat of the item
+UENUM(BlueprintType, Category = "Items")
+enum EContextStat
+{
+	Default UMETA(DisplayName = "Default"),
+	Damage UMETA(DisplayName = "Damage"),
+	Defence UMETA(DisplayName = "Defence")
+};
+
 // Enum denoting how the inventory should be sorted
 UENUM(BlueprintType, Category = "Items")
 enum EInventorySortType
@@ -39,41 +48,62 @@ public:
 
 	/// -- Item Data --
 	// The ID of the item (this matches the row name in the data table)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
 	FName ID;
 
 	// The display name of the item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
 	FString Name;
 
+	// The context stat type of an item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
+	TEnumAsByte<EContextStat> StatType;
+
+	// The amount tied to the context stat
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
+	int StatAmount;
+
+	// The description of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
+	FString Desc;
+
 	// The type of the item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
 	TEnumAsByte<EItemType> Type;
 
+	// The class of the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
+	TSubclassOf<class AParentItem> Class;
+
 	// The maximum amount an FItemData struct can hold.  Use -1 for infinite stacking
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
 	int MaxStack;
 
-	/// -- Item Actives
+	/// -- Item Upgrades --
+	// Any upgrade tags applied to the item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Upgrades")
+	TArray<FString> UpgradeTags;
+
+	/// -- Item Actives --
 	// The current amount of the item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Actives")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Actives")
 	int Amount;
 
 	// The order this item is placed in an inventory (useful for sorting by newest/oldest)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Actives")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Actives")
 	int InventoryOrder;
 
 	/// -- Item Display --
 	// The static mesh of the item (if valid SkelMesh won't be used)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Display")
 	UStaticMesh* StaticMesh = nullptr;
 
 	// The skeletal mesh of the item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Display")
 	USkeletalMesh* SkelMesh = nullptr;
 
 	// The icon of the item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Catgeory = "Item Display")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Display")
 	UTexture2D* Icon = nullptr;
 
 

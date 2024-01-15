@@ -25,7 +25,7 @@ ASingleInputPlayerController::ASingleInputPlayerController()
 	if (IMCObject.Succeeded()) { InputMapping = IMCObject.Object; }
 
 	// Find the UI object and store it
-	static ConstructorHelpers::FClassFinder<UUserWidget>UIClass(TEXT("/Game/Core/WBP_SingleInputUI"));
+	static ConstructorHelpers::FClassFinder<UUserWidget>UIClass(TEXT("/Game/Core/UI/WBP_SingleInputUI"));
 	if (UIClass.Succeeded()) {
 		UE_LOG(LogTemp, Warning, TEXT("UI Found"));
 		UI = CreateWidget<USingleInputUI>(GetWorld(), UIClass.Class);
@@ -87,6 +87,8 @@ void ASingleInputPlayerController::SetupInputComponent()
 // Called to make the player interact with the world
 void ASingleInputPlayerController::PlayerInteract(const FInputActionValue& Value)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Firing"));
+
 	// Check that the AICharacter is valid
 	if (AICharacter) {
 		// If so, deproject the mouse to world space and call MoveToLocation on the AICharacter

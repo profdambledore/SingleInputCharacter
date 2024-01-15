@@ -32,6 +32,7 @@ public:
 	FItemData FindItemData(FName ItemID);
 
 	// Called to add an item to the inventory
+	UFUNCTION(BlueprintCallable)
 	void AddItemToArray(FName NewItemID, int Amount);
 
 	// Called to remove an item from the inventory

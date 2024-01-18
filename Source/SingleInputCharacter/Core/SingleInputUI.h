@@ -20,9 +20,16 @@ public:
 
 	virtual void SynchronizeProperties() override;
 
-	// Called to swap to the Inventory State
+	UFUNCTION(BlueprintCallable)
+	void SwapToCraftingUI(TEnumAsByte<EStationType> InStation = EStationType::None);
+
+	// Button event to swap to the Inventory State
 	UFUNCTION()
 	void OnInventoryButtonRelased();
+
+	// Button event to swap to the Crafting State
+	UFUNCTION()
+	void OnCraftingStateReleased();
 
 protected:
 	/// -- Button Functions --
@@ -53,6 +60,10 @@ public:
 	// The inventory state
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	class UInventoryUI* InventoryState = nullptr;
+
+	// The crafting state
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	class UCraftingUI* CraftingState = nullptr;
 
 	/// -- In Game Components
 	// Button to toggle the camera angle

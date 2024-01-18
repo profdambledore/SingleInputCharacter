@@ -3,7 +3,9 @@
 #include "Core/SingleInputPerson.h"
 #include "Core/SingleInputAIController.h"
 #include "Core/SingleInputInventory.h"
+#include "Core/SingleInputCraftingComponent.h"
 #include "Core/ParentItem.h"
+#include "UI/ItemDisplay.h"
 
 // Sets default values
 ASingleInputPerson::ASingleInputPerson()
@@ -24,6 +26,10 @@ ASingleInputPerson::ASingleInputPerson()
 	// Add the InventoryComponent to the character
 	InventoryComponent = CreateDefaultSubobject<USingleInputInventory>(TEXT("Inventory Component"));
 
+	// Add the crafting component to the character
+	CraftingComponent = CreateDefaultSubobject<USingleInputCraftingComponent>(TEXT("Crafting Component"));
+	CraftingComponent->IC = InventoryComponent;
+
 	// Find and store the test mesh
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>SMObject(TEXT("/Game/PolygonApocalypse/Meshes/Characters/SK_Chr_Biker_Male_01"));
 	if (SMObject.Succeeded()) { GetMesh()->SetSkeletalMesh(SMObject.Object); }
@@ -39,15 +45,10 @@ ASingleInputPerson::ASingleInputPerson()
 void ASingleInputPerson::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// For testing purposes, add items to the inventory
-	//InventoryComponent->AddItemToArray("SIP_Rifle_Basic", 32);
-	//InventoryComponent->AddItemToArray("SIP_Food_TunaCan", 32);
-	//InventoryComponent->AddItemToArray("SIP_Armour_Basic", 32);
 
-	//InventoryComponent->SortInventory(EInventorySortType::Alphabetically);
-	
-
+	if (!ItemDisplay) {
+		ItemDisplay = GetWorld()->SpawnActor<AItemDisplay>(AItemDisplay::StaticClass(), FVector(0.0f, 0.0f, 10000.0f), FRotator(), FActorSpawnParameters());
+	}
 }
 
 // Called every frame

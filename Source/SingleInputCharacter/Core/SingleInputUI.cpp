@@ -3,7 +3,9 @@
 
 #include "Core/SingleInputUI.h"
 #include "Core/SingleInputPerson.h"
+#include "Core/SingleInputCraftingComponent.h"
 #include "UI/InventoryUI.h"
+#include "UI/CraftingUI.h"
 
 // Called on construct to setup the widget
 void USingleInputUI::NativeConstruct()
@@ -21,12 +23,26 @@ void USingleInputUI::NativeConstruct()
 	ACRotateCameraButton->OnReleased.AddDynamic(this, &USingleInputUI::OnACRotateCameraButtonReleased);
 
 	InventoryState->MainUI = this;
+	CraftingState->MainUI = this;
 }
 
 // Called to update the properties of the widget
 void USingleInputUI::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
+}
+
+/// -- State Events --
+// Called to swap to the Crafting State 
+void USingleInputUI::SwapToCraftingUI(TEnumAsByte<EStationType> InStation)
+{
+	// Check if the SingleInputPerson is valid
+	if (SingleInputPerson) {
+		// Call OnStateActive of the InventoryState and set the active widgets
+		SingleInputPerson->CraftingComponent->ActiveStation = InStation;
+		CraftingState->OnStateActive();
+		UISwitcher->SetActiveWidgetIndex(2);
+	}
 }
 
 /// -- Button Events --
@@ -65,8 +81,18 @@ void USingleInputUI::OnInventoryButtonRelased()
 {
 	// Check if the SingleInputPerson is valid
 	if (SingleInputPerson) {
-		// Syncronize the properties in the Inventory and update the active widget
-		InventoryState->SynchronizeProperties();
+		// Call OnStateActive of the InventoryState and set the active widget
+		InventoryState->OnStateActive();
 		UISwitcher->SetActiveWidgetIndex(1);
+	}
+}
+
+void USingleInputUI::OnCraftingStateReleased()
+{
+	// Check if the SingleInputPerson is valid
+	if (SingleInputPerson) {
+		// Call OnStateActive of the InventoryState and set the active widgets
+		CraftingState->OnStateActive();
+		UISwitcher->SetActiveWidgetIndex(2);
 	}
 }

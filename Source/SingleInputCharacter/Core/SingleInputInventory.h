@@ -8,6 +8,7 @@
 #include "Algo/Reverse.h"
 
 #include "Core/Data/ItemData.h"
+#include "Core/Data/CraftingData.h"
 
 #include "SingleInputInventory.generated.h"
 
@@ -29,6 +30,7 @@ public:
 	TArray<FItemData> GetInventoryData();
 
 	// Called to get the data of an item from the data table
+	UFUNCTION(BlueprintCallable)
 	FItemData FindItemData(FName ItemID);
 
 	// Called to add an item to the inventory
@@ -36,10 +38,13 @@ public:
 	void AddItemToArray(FName NewItemID, int Amount);
 
 	// Called to remove an item from the inventory
-	void RemoveItemFromArray(FItemData ItemToRemove);
+	void RemoveItemFromArray(FName NewItemID, int Amount);
 
 	// Called to sort the inventory by an inputted way
 	void SortInventory(TEnumAsByte<EInventorySortType> SortBy);
+
+	// Called to get if all items exist in the inventory
+	bool GetItemsExistInInventory(TArray<FCraftingItemData> Items);
 
 	// Called to resort the inventory by the current type
 	void ReSortInventory();
@@ -74,7 +79,5 @@ protected:
 	UDataTable* ItemDataTable = nullptr;
 
 	// The current inventory order
-	int InventoryOrder = 0;
-
-		
+	int InventoryOrder = 0;	
 };

@@ -26,13 +26,13 @@ void UInventoryUI::NativeConstruct()
 	// Sort Materials Button Release
 	SortMaterialsButton->OnReleased.AddDynamic(this, &UInventoryUI::OnSortMaterialsButtonReleased);
 
-	// Sort Materials Button Release
+	// Sort Alphabetical Button Release
 	InventSortAlphabeticalButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortAlphabeticalReleased);
 
-	// Sort Materials Button Release
+	// Sort Newest Button Release
 	InventSortNewestButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortNewestReleased);
 
-	// Sort Materials Button Release
+	// Sort Oldest Button Release
 	InventSortOldestButton->OnReleased.AddDynamic(this, &UInventoryUI::OnInventSortOldestReleased);
 }
 
@@ -41,16 +41,10 @@ void UInventoryUI::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
-	// Check if the ItemDisplay is spawned.  If it isn't, spawn it
-	// This will be moved to the SingleInputPerson
-	if (!ItemDisplay) {
-		ItemDisplay = GetWorld()->SpawnActor<AItemDisplay>(AItemDisplay::StaticClass(), FVector(0.0f, 0.0f, 10000.0f), FRotator(), FActorSpawnParameters());
-	}
-
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
 		// Resort the inventory and clear the description box
-		MainUI->SingleInputPerson->InventoryComponent->ReSortInventory();
+		IC->ReSortInventory();
 		ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortInventoryByAll();
@@ -62,12 +56,43 @@ void UInventoryUI::SynchronizeProperties()
 	}
 }
 
+void UInventoryUI::OnStateActive()
+{
+	// Check if the ItemDisplay pointer is set.  If not, set it now
+	if (!ItemDisplay) {
+		ItemDisplay = MainUI->SingleInputPerson->ItemDisplay;
+	}
+
+	// Check if the InventoryComponent pointer is set.  If not, set it now
+	if (!IC) {
+		IC = IC;
+	}
+
+	// Update the Inventory Tile List with the current inventory
+	if (MainUI) {
+		// Resort the inventory and clear the description box
+		IC->ReSortInventory();
+		ClearDescriptionBox();
+		if (bSortedByAll) {
+			SortInventoryByAll();
+		}
+
+		else {
+			SortInventoryByStat(SortedBy);
+		}
+	}
+}
+
+void UInventoryUI::OnStateDeactivate()
+{
+}
+
 /// -- Inventory Sorting --
 // Button OnRelease to sort the inventory alphabetically
 void UInventoryUI::OnInventSortAlphabeticalReleased()
 {
 	// Set the sorting type to Alphabetically and then sync the widget
-	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Alphabetically;
+	IC->InventorySort = EInventorySortType::Alphabetically;
 	SynchronizeProperties();
 }
 
@@ -75,7 +100,7 @@ void UInventoryUI::OnInventSortAlphabeticalReleased()
 void UInventoryUI::OnInventSortNewestReleased()
 {
 	// Set the sorting type to Newest and then sync the widget
-	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Newest;
+	IC->InventorySort = EInventorySortType::Newest;
 	SynchronizeProperties();
 }
 
@@ -83,7 +108,7 @@ void UInventoryUI::OnInventSortNewestReleased()
 void UInventoryUI::OnInventSortOldestReleased()
 {
 	// Set the sorting type to Oldest and then sync the widget
-	MainUI->SingleInputPerson->InventoryComponent->InventorySort = EInventorySortType::Oldest;
+	IC->InventorySort = EInventorySortType::Oldest;
 	SynchronizeProperties();
 }
 
@@ -93,7 +118,7 @@ void UInventoryUI::SortInventoryByAll()
 {
 	// Update the TileView with all items in the inventory
 	bSortedByAll = true;
-	UpdateListViewWithItems(MainUI->SingleInputPerson->InventoryComponent->GetInventoryData());
+	UpdateListViewWithItems(IC->GetInventoryData());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
 }
 
@@ -124,7 +149,7 @@ void UInventoryUI::SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort)
 
 	// Sort the inventory and store all items matching the selected type
 	TArray<FItemData> SortedItems;
-	for (FItemData i : MainUI->SingleInputPerson->InventoryComponent->GetInventoryData()) {
+	for (FItemData i : IC->GetInventoryData()) {
 		if (i.Type == TypeToSort) {
 			SortedItems.Add(i);
 		}

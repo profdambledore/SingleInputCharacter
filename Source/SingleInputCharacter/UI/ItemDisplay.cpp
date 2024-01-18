@@ -22,7 +22,7 @@ AItemDisplay::AItemDisplay()
 	DisplayCapture->ShowOnlyComponent(MeshDisplay_Skel);
 
 	// Find the Render Texture
-	ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D>RTObject(TEXT("/Game/Core/ItemDisplay/CRT_ItemDisplay"));
+	ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D>RTObject(TEXT("/Game/Items/CRT_ItemDisplay"));
 	if (RTObject.Succeeded()) { DisplayCapture->TextureTarget = RTObject.Object; }
 
 

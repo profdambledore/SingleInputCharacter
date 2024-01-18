@@ -69,13 +69,13 @@ void USingleInputInventory::AddItemToArray(FName NewItemID, int Amount)
 }
 
 // Called to remove an item from the inventory
-void USingleInputInventory::RemoveItemFromArray(FItemData ItemToRemove)
+void USingleInputInventory::RemoveItemFromArray(FName NewItemID, int Amount)
 {
 	// Check that the inventory holds enough of the item wanting to be removed
 	int AmountInInvent = 0;
 
 	for (int i = 0; i < InventoryItems.Num(); i++) {
-		if (InventoryItems[i].ID == ItemToRemove.ID) {
+		if (InventoryItems[i].ID == NewItemID) {
 			AmountInInvent = AmountInInvent + InventoryItems[i].Amount;
 		}
 	}
@@ -83,14 +83,14 @@ void USingleInputInventory::RemoveItemFromArray(FItemData ItemToRemove)
 	// If there is enough to remove, then iterate over the array finding all matching IDs
 	// Remove amounts of items from each ID until either enough is removed or that index is now empty
 	// On index empty, remove it from the array
-	if (AmountInInvent >= ItemToRemove.Amount) {
+	if (AmountInInvent >= Amount) {
 		for (int i = 0; i < InventoryItems.Num(); i++) {
-			if (InventoryItems[i].ID == ItemToRemove.ID && ItemToRemove.Amount > 0) {
-				ItemToRemove.Amount = InventoryItems[i].RemoveItems(ItemToRemove.Amount);
-				if (ItemToRemove.Amount <= 0) {
+			if (InventoryItems[i].ID == NewItemID && Amount > 0) {
+				Amount = InventoryItems[i].RemoveItems(Amount);
+				if (Amount <= 0) {
 					InventoryItems.RemoveAt(i);
 					i--;
-					ItemToRemove.Amount = ItemToRemove.Amount * -1;
+					Amount = Amount * -1;
 				}
 			}
 		}
@@ -250,3 +250,23 @@ void USingleInputInventory::SortInventoryOldest()
 	InventoryItems = SortedArray;
 }
 
+bool USingleInputInventory::GetItemsExistInInventory(TArray<FCraftingItemData> Items)
+{
+	if (InventoryItems.IsEmpty() == false) {
+		for (FCraftingItemData i : Items) {
+			for (FItemData j : InventoryItems) {
+				if (i.ID == j.ID) {
+					i.Amount -= j.Amount;
+					if (i.Amount <= 0) {
+						break;
+					}
+				}
+			}
+			if (i.Amount > 1) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}

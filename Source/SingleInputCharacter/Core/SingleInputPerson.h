@@ -61,9 +61,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	class USingleInputInventory* InventoryComponent;
 
+	// Crafting Component
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class USingleInputCraftingComponent* CraftingComponent;
+
+	/// -- References -- 
 	// Controller Reference
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
 	class ASingleInputAIController* AI = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "References")
+	class AItemDisplay* ItemDisplay = nullptr;
 
 protected:
 	/// -- Camera --

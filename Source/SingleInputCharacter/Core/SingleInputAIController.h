@@ -25,11 +25,17 @@ public:
 	// Called when the AI Possesses a character
 	virtual void OnPossess(APawn* InPawn) override;
 
+	// Called to update the BehavoirTree with the PlayerController value
+	void SetPCBlackboardValue(UObject* InController);
+
 	// Called to change the AI state to Move
 	void MoveState(FVector InLoc);
 
 	// Called to change the AI state to PickupItem
 	void PickupItemState(class AParentItem* ItemToCollect);
+
+	// Called to change the AI state to MoveToCraftingStation
+	void CraftStationState(class AParentStation* StationToAccess);
 
 protected:
 	// Called when the game starts or when spawned

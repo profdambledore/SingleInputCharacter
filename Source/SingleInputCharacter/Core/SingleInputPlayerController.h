@@ -25,6 +25,10 @@ public:
 
 	virtual void SetupInputComponent() override;
 
+	/// -- From AI --
+	UFUNCTION(BlueprintCallable)
+	void OpenCraftingMenu();
+
 protected:
 	/// -- Inputs --
 	// Called to make the player interact with the world

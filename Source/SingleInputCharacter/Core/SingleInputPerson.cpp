@@ -5,6 +5,7 @@
 #include "Core/SingleInputInventory.h"
 #include "Core/SingleInputCraftingComponent.h"
 #include "Core/ParentItem.h"
+#include "Core/ParentStation.h"
 #include "UI/ItemDisplay.h"
 
 // Sets default values
@@ -100,9 +101,14 @@ void ASingleInputPerson::RotateCameraByStep(bool bRotateClockwise)
 // Called to move the character to a position in the world
 void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirection)
 {
+	// Bool used to denote if a state change has happened during this trace
+	bool bStateUpdate = false;
+
 	// Calculate where a trace hits and move the character to the hit location if valid 
 	FHitResult TraceHit;
 	bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, NewLocation, NewLocation + (NewDirection * 4000), ECC_WorldDynamic, FCollisionQueryParams(FName("DistTrace"), true));
+
+	UE_LOG(LogTemp, Warning, TEXT("actor hit name = %s"), *TraceHit.GetActor()->GetName());
 
 	// Compare what the trace hit
 	// If the trace hit a item, check that it doesn't have a owner already
@@ -111,9 +117,16 @@ void ASingleInputPerson::MoveToLocation(FVector NewLocation, FVector NewDirectio
 		if (HitItem->Owner == nullptr) {
 			// Move to the item and pick it up
 			AI->PickupItemState(HitItem);
+			bStateUpdate = true;
 		}
 	}
-	else {
+	// Else, check if the trace hit a station
+	if (TraceHit.GetActor()->IsA(AParentStation::StaticClass())) {
+		AParentStation* HitItem = Cast<AParentStation>(TraceHit.GetActor());
+		AI->CraftStationState(HitItem);
+		bStateUpdate = true;
+	}
+	else if (!bStateUpdate) {
 		AI->MoveState(TraceHit.Location);
 	}
 }

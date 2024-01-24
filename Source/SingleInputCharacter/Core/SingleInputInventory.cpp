@@ -257,16 +257,21 @@ bool USingleInputInventory::GetItemsExistInInventory(TArray<FCraftingItemData> I
 			for (FItemData j : InventoryItems) {
 				if (i.ID == j.ID) {
 					i.Amount -= j.Amount;
+					UE_LOG(LogTemp, Warning, TEXT("Id = %s / Amount remaining = %i"), *i.ID.ToString(), i.Amount);
 					if (i.Amount <= 0) {
+						UE_LOG(LogTemp, Warning, TEXT("eno"));
 						break;
 					}
 				}
 			}
-			if (i.Amount > 1) {
+			UE_LOG(LogTemp, Warning, TEXT("Check before next item: Id = %s / Amount remaining = %i"), *i.ID.ToString(), i.Amount);
+			if (i.Amount > 0) {
+				UE_LOG(LogTemp, Warning, TEXT("not eno"));
 				return false;
 			}
 		}
 		return true;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("not exist"));
 	return false;
 }

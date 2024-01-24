@@ -34,13 +34,13 @@ void USingleInputUI::SynchronizeProperties()
 
 /// -- State Events --
 // Called to swap to the Crafting State 
-void USingleInputUI::SwapToCraftingUI(TEnumAsByte<EStationType> InStation)
+void USingleInputUI::SwapToCraftingUI()
 {
 	// Check if the SingleInputPerson is valid
 	if (SingleInputPerson) {
 		// Call OnStateActive of the InventoryState and set the active widgets
-		SingleInputPerson->CraftingComponent->ActiveStation = InStation;
 		CraftingState->OnStateActive();
+		CurrentUIState = CraftingState;
 		UISwitcher->SetActiveWidgetIndex(2);
 	}
 }
@@ -83,6 +83,7 @@ void USingleInputUI::OnInventoryButtonRelased()
 	if (SingleInputPerson) {
 		// Call OnStateActive of the InventoryState and set the active widget
 		InventoryState->OnStateActive();
+		CurrentUIState = InventoryState;
 		UISwitcher->SetActiveWidgetIndex(1);
 	}
 }
@@ -93,6 +94,17 @@ void USingleInputUI::OnCraftingStateReleased()
 	if (SingleInputPerson) {
 		// Call OnStateActive of the InventoryState and set the active widgets
 		CraftingState->OnStateActive();
+		CurrentUIState = CraftingState;
 		UISwitcher->SetActiveWidgetIndex(2);
+	}
+}
+
+void USingleInputUI::CloseMenuUI()
+{
+	// Set the active widget index to the In-Game State and deactivate the current UI state
+	UISwitcher->SetActiveWidgetIndex(0);
+	if (CurrentUIState) {
+		CurrentUIState->OnStateDeactivate();
+		CurrentUIState = nullptr;
 	}
 }

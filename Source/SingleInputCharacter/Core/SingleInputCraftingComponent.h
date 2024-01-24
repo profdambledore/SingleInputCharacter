@@ -45,6 +45,7 @@ public:
 	class USingleInputInventory* IC = nullptr;
 
 	// Enum to denote what crafting station is currently being accessed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TEnumAsByte<EStationType> ActiveStation = EStationType::None;
 
 protected:	

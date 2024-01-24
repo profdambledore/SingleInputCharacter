@@ -78,6 +78,11 @@ protected:
 	UFUNCTION()
 	void OnCraftButtonReleased();
 
+	/// -- Menu Navigation --
+	// Button to close the current UI State and return to gameplay
+	UFUNCTION()
+	void OnCloseMenuButtonReleased();
+
 public:
 	/// -- References --
 	// Reference to the ItemDisplay

@@ -28,6 +28,9 @@ void UCraftingUI::NativeConstruct()
 
 	// Craft Button Release
 	CraftButton->OnReleased.AddDynamic(this, &UCraftingUI::OnCraftButtonReleased);
+
+	// Close Menu Button Release
+	CloseMenuButton->OnReleased.AddDynamic(this, &UCraftingUI::OnCloseMenuButtonReleased);
 }
 
 void UCraftingUI::SynchronizeProperties()
@@ -39,10 +42,12 @@ void UCraftingUI::SynchronizeProperties()
 		ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortRecipesByAll();
+			ClearDescriptionBox();
 		}
 
 		else {
 			SortRecipesByStat(SortedBy);
+			ClearDescriptionBox();
 		}
 	}
 }
@@ -60,6 +65,7 @@ void UCraftingUI::OnStateActive()
 		IC = MainUI->SingleInputPerson->InventoryComponent;
 	}
 
+	ClearDescriptionBox();
 	SortRecipesByAll();
 
 	CraftButton->SetVisibility(ESlateVisibility::Hidden);
@@ -105,8 +111,16 @@ void UCraftingUI::OnCraftButtonReleased()
 	if (CurrentCraftingSlot) {
 		if (CurrentCraftingSlot->SlotRecipe.bRecipeActive == true) {
 			CC->CraftItem(CurrentCraftingSlot->SlotRecipe.ID);
-			SynchronizeProperties();
+			
 		}
+	}
+	SynchronizeProperties();
+}
+
+void UCraftingUI::OnCloseMenuButtonReleased()
+{
+	if (MainUI) {
+		MainUI->CloseMenuUI();
 	}
 }
 

@@ -45,7 +45,7 @@ TArray<FCraftingData> USingleInputCraftingComponent::GetCurrentCraftables()
 	// For each recipe in the data table, check if it has the matching station or "None" station
 	for (FName i : OutRows) {
 		CurrentRow = CraftingDataTable->FindRow<FCraftingData>(i, "", true);
-		if (CurrentRow->Station == EStationType::None || ActiveStation) {
+		if (CurrentRow->Station == EStationType::None || CurrentRow->Station == ActiveStation) {
 			// If it does, check if it can be crafted with the current items in the inventory
 			if (IC->GetItemsExistInInventory(CurrentRow->Inputs)) {
 				MatchingItems.Add(FCraftingData(*CurrentRow, true));
@@ -69,7 +69,7 @@ TArray<FCraftingData> USingleInputCraftingComponent::GetCurrentCraftablesOfType(
 	// For each recipe in the data table, check if it has the matching station or "None" station
 	for (FName i : OutRows) {
 		CurrentRow = CraftingDataTable->FindRow<FCraftingData>(i, "", true);
-		if (CurrentRow->Station == EStationType::None || ActiveStation) {
+		if (CurrentRow->Station == (EStationType::None || ActiveStation)) {
 			// If it does, check if the output item matches the InType
 			if (IC->FindItemData(CurrentRow->Output.ID).Type == InType) {
 				// Finally, check if it can be crafted with the current items in the inventory
@@ -109,5 +109,3 @@ void USingleInputCraftingComponent::CraftItem(FName RecipeID)
 		IC->AddItemToArray(Recipe->Output.ID, Recipe->Output.Amount);
 	}
 }
-
-

@@ -45,6 +45,7 @@ void ASingleInputPlayerController::BeginPlay()
 	// Then spawn it's controller and make it possess the person
 	AIControl = GetWorld()->SpawnActor<ASingleInputAIController>(ASingleInputAIController::StaticClass(), FVector(), FRotator(), FActorSpawnParameters());
 	AIControl->Possess(AICharacter);
+	AIControl->SetPCBlackboardValue(this);
 	AICharacter->AI = AIControl;
 
 	// Setup OwnedPawn on the AICharacter's spring arm
@@ -82,6 +83,11 @@ void ASingleInputPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InputConfig->Debug_CameraRotate, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::DEBUG_Inventory);
 		EnhancedInputComponent->BindAction(InputConfig->Debug_CameraAngle, ETriggerEvent::Triggered, this, &ASingleInputPlayerController::DEBUG_AngleCamera);
 	}
+}
+
+void ASingleInputPlayerController::OpenCraftingMenu()
+{
+	UI->SwapToCraftingUI();
 }
 
 // Called to make the player interact with the world

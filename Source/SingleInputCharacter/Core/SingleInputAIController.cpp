@@ -4,6 +4,7 @@
 #include "Core/SingleInputAIController.h"
 
 #include "Core/ParentItem.h"
+#include "Core/ParentStation.h"
 
 ASingleInputAIController::ASingleInputAIController()
 {
@@ -40,6 +41,11 @@ void ASingleInputAIController::OnPossess(APawn* InPawn)
 
 }
 
+void ASingleInputAIController::SetPCBlackboardValue(UObject* InController)
+{
+	BBC->SetValueAsObject(FName("PlayerController"), InController);
+}
+
 void ASingleInputAIController::MoveState(FVector InLoc)
 {
 	// Clear the state to stop any other commands currently firing
@@ -54,4 +60,10 @@ void ASingleInputAIController::PickupItemState(AParentItem* ItemToCollect)
 	BBC->SetValueAsString(FName("State"), "PickupItem");
 	BBC->SetValueAsObject(FName("PickupItem"), ItemToCollect);
 
+}
+
+void ASingleInputAIController::CraftStationState(AParentStation* StationToAccess)
+{
+	BBC->SetValueAsString(FName("State"), "CraftAtStation");
+	BBC->SetValueAsObject(FName("PickupItem"), StationToAccess);
 }

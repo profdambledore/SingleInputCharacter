@@ -21,7 +21,7 @@ public:
 	virtual void SynchronizeProperties() override;
 
 	UFUNCTION(BlueprintCallable)
-	void SwapToCraftingUI(TEnumAsByte<EStationType> InStation = EStationType::None);
+	void SwapToCraftingUI();
 
 	// Button event to swap to the Inventory State
 	UFUNCTION()
@@ -30,6 +30,9 @@ public:
 	// Button event to swap to the Crafting State
 	UFUNCTION()
 	void OnCraftingStateReleased();
+
+	// Called to swap to the InGame State (no active UI)
+	void CloseMenuUI();
 
 protected:
 	/// -- Button Functions --
@@ -50,6 +53,9 @@ public:
 	// Reference to the SingleInputPerson
 	UPROPERTY(BlueprintReadOnly, Category = "References")
 	class ASingleInputPerson* SingleInputPerson = nullptr;
+
+	// Pointer to the current active state
+	class UParentState* CurrentUIState = nullptr;
 
 	/// -- Components --
 	// Widget switcher that allows the UI to swap between different states

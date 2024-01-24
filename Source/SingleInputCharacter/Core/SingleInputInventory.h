@@ -41,7 +41,7 @@ public:
 	void RemoveItemFromArray(FName NewItemID, int Amount);
 
 	// Called to sort the inventory by an inputted way
-	void SortInventory(TEnumAsByte<EInventorySortType> SortBy);
+	TArray<FItemData> SortInventory();
 
 	// Called to get if all items exist in the inventory
 	bool GetItemsExistInInventory(TArray<FCraftingItemData> Items);
@@ -54,13 +54,13 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Called to sort the inventory in alphabetical order
-	void SortInventoryAlphabetically();
+	TArray<FItemData> SortInventoryAlphabetically();
 
 	// Called to sort the inventory by newest item first
-	void SortInventoryNewest();
+	TArray<FItemData> SortInventoryNewest();
 
 	// Called to sort the inventory by oldest item first
-	void SortInventoryOldest();
+	TArray<FItemData> SortInventoryOldest();
 
 public:	
 	/// -- Inventory Data --

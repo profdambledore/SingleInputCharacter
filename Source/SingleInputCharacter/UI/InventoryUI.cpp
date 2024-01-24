@@ -44,8 +44,8 @@ void UInventoryUI::SynchronizeProperties()
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
 		// Resort the inventory and clear the description box
-		IC->ReSortInventory();
-		ClearDescriptionBox();
+		//IC->ReSortInventory();
+		//ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortInventoryByAll();
 		}
@@ -65,13 +65,13 @@ void UInventoryUI::OnStateActive()
 
 	// Check if the InventoryComponent pointer is set.  If not, set it now
 	if (!IC) {
-		IC = IC;
+		IC = MainUI->SingleInputPerson->InventoryComponent;
 	}
 
 	// Update the Inventory Tile List with the current inventory
 	if (MainUI) {
 		// Resort the inventory and clear the description box
-		IC->ReSortInventory();
+		//IC->ReSortInventory();
 		ClearDescriptionBox();
 		if (bSortedByAll) {
 			SortInventoryByAll();
@@ -118,7 +118,7 @@ void UInventoryUI::SortInventoryByAll()
 {
 	// Update the TileView with all items in the inventory
 	bSortedByAll = true;
-	UpdateListViewWithItems(IC->GetInventoryData());
+	UpdateListViewWithItems(IC->SortInventory());
 	CurrentSortText->SetText(FText::FromString(TEXT("All")));
 }
 
@@ -149,7 +149,7 @@ void UInventoryUI::SortInventoryByStat(TEnumAsByte<EItemType> TypeToSort)
 
 	// Sort the inventory and store all items matching the selected type
 	TArray<FItemData> SortedItems;
-	for (FItemData i : IC->GetInventoryData()) {
+	for (FItemData i : IC->SortInventory()) {
 		if (i.Type == TypeToSort) {
 			SortedItems.Add(i);
 		}

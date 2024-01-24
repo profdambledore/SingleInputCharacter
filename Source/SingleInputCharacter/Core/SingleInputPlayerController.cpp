@@ -139,7 +139,7 @@ void ASingleInputPlayerController::DEBUG_Inventory(const FInputActionValue& Valu
 	// Check if the player is in debug mode and AICharacter is valid
 	if (bDebug && AICharacter) {
 		// Call OnInventoryButtonRelase in the UI to show the inventory state
-		UI->OnCraftingStateReleased();
+		UI->OnInventoryButtonRelased();
 	}
 }
 

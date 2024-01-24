@@ -97,35 +97,33 @@ void USingleInputInventory::RemoveItemFromArray(FName NewItemID, int Amount)
 	}
 }
 
-// Called to sort the inventory by an inputted way
-void USingleInputInventory::SortInventory(TEnumAsByte<EInventorySortType> SortBy)
+// Called to return the inventory's data, sorted by an inputted way
+TArray<FItemData> USingleInputInventory::SortInventory()
 {
 	// If the inputted sort is Alphabetically, then call SortInventoryAlphabetically
-	if (SortBy == EInventorySortType::Alphabetically) {
-		InventorySort = SortBy;
-		SortInventoryAlphabetically();
+	if (InventorySort == EInventorySortType::Alphabetically) {
+		return SortInventoryAlphabetically();
 	}
 	// Or by Newest
-	else if (SortBy == EInventorySortType::Newest) {
-		InventorySort = SortBy;
-		SortInventoryNewest();
+	else if (InventorySort == EInventorySortType::Newest) {
+		return SortInventoryNewest();
 	}
 	// Or by Oldest
-	else if (SortBy == EInventorySortType::Oldest) {
-		InventorySort = SortBy;
-		SortInventoryOldest();
+	else if (InventorySort == EInventorySortType::Oldest) {
+		return SortInventoryOldest();
 	}
+	return InventoryItems;
 }
 
-// Called to resort the inventory by the current type
+// DEPRECTE - Called to resort the inventory by the current type
 void USingleInputInventory::ReSortInventory()
 {
 	// Simply sort the inventory with the current setting
-	SortInventory(InventorySort);
+	//SortInventory(InventorySort);
 }
 
 // Called to sort the inventory in alphabetical order
-void USingleInputInventory::SortInventoryAlphabetically()
+TArray<FItemData> USingleInputInventory::SortInventoryAlphabetically()
 {
 	TArray<FItemData> SortedArray;
 
@@ -170,11 +168,11 @@ void USingleInputInventory::SortInventoryAlphabetically()
 	}
 
 	// Update the inventory with the new sorted items
-	InventoryItems = SortedArray;
+	return SortedArray;
 }
 
 // Called to sort the inventory by newest item first
-void USingleInputInventory::SortInventoryNewest()
+TArray<FItemData> USingleInputInventory::SortInventoryNewest()
 {
 	TArray<FItemData> SortedArray;
 
@@ -209,11 +207,11 @@ void USingleInputInventory::SortInventoryNewest()
 	}
 	// Update the inventory with the new sorted items
 	Algo::Reverse(SortedArray);
-	InventoryItems = SortedArray;
+	return SortedArray;
 }
 
 // Called to sort the inventory by oldest item first
-void USingleInputInventory::SortInventoryOldest()
+TArray<FItemData> USingleInputInventory::SortInventoryOldest()
 {
 	TArray<FItemData> SortedArray;
 
@@ -247,7 +245,7 @@ void USingleInputInventory::SortInventoryOldest()
 		}
 	}
 	// Update the inventory with the new sorted items
-	InventoryItems = SortedArray;
+	return SortedArray;
 }
 
 bool USingleInputInventory::GetItemsExistInInventory(TArray<FCraftingItemData> Items)

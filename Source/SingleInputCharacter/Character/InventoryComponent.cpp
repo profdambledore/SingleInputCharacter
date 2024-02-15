@@ -1,0 +1,322 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Character/InventoryComponent.h"
+
+#include "Item/ItemManager.h"
+
+// Sets default values for this component's properties
+UInventoryComponent::UInventoryComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = false;
+
+	// ...
+}
+
+// Called when the game starts
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Find the ItemManager in the world and store a pointer to it
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AItemManager::StaticClass());
+	if (FoundActor) {
+		ItemManager = Cast<AItemManager>(FoundActor);
+	}
+
+	// Initalize the inventory map with empty arrays
+	Inventory.Add(Weapon, TArray<FItemData>());
+	Inventory.Add(Armour, TArray<FItemData>());
+	Inventory.Add(Material, TArray<FItemData>());
+	
+}
+
+
+// Called every frame
+void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+TArray<FItemData> UInventoryComponent::GetAllInventoryItems()
+{
+	// Make an array that combines all of the TMap Inventory arrays together and return
+	TArray<FItemData> CombinedInventory;
+	TArray<FInventoryTypeData> InventoryTypes; Inventory.GenerateValueArray(InventoryTypes);
+	for (FInventoryTypeData i : InventoryTypes) {
+		CombinedInventory += i.Items;
+	}
+
+	return CombinedInventory;
+}
+
+TArray<FItemData> UInventoryComponent::GetInventoryItemsOfType(TEnumAsByte<EItemType> Type)
+{
+	return Inventory.Find(Type)->Items;
+}
+
+void UInventoryComponent::AddItemToInventory(FName InItemID, int InAmount)
+{
+	// Check if the ItemManager pointer has been set
+	if (ItemManager) {
+		// Get the item data from the manager
+		FItemConst NewItem = ItemManager->GetItemDataFromID<FItemConst>(InItemID, EItemType::Item);
+
+		// Get the TMap array that matches this items type
+		TArray<FItemData> Items = Inventory.Find(NewItem.Type)->Items;
+
+		while (InAmount > 0) {
+			UE_LOG(LogTemp, Warning, TEXT("%i"), InAmount);
+			// Check if there is an index that has this item already in the array
+			for (int i = 0; i < Items.Num(); i++) {
+				if (Items[i].ItemID == InItemID && InAmount > 0) {
+					if (Items[i].Amount != NewItem.MaxStack) {
+						InAmount = Items[i].AddItems(InItemID, InAmount, NewItem.MaxStack);
+					}
+				}
+			}
+			// If some amount still exists, create a new index with the NewItem data without an amount and recurse
+			if (InAmount > 0) {
+				Items.Add(FItemData(InItemID, NewItem.Name, 0, InventoryOrder));
+				InventoryOrder++;
+				UE_LOG(LogTemp, Warning, TEXT("Added New Index"));
+			}
+		}
+
+		// Add the array back to the map in the correct key
+		Inventory.Add(NewItem.Type, FInventoryTypeData(Items));
+	}
+}
+
+void UInventoryComponent::RemoveItemFromInventory(FName InItemID, int Amount)
+{
+	// Check if the ItemManager pointer has been set
+	if (ItemManager) {
+		// Get the item data from the manager
+		FItemConst NewItem = ItemManager->GetItemDataFromID<FItemConst>(InItemID, EItemType::Item);
+
+		// Get the TMap array that matches this items type
+		TArray<FItemData> Items = Inventory.Find(NewItem.Type)->Items;
+
+		// Check that the inventory holds enough of the item wanting to be removed
+		int AmountInInvent = 0;
+
+		for (int i = 0; i < Items.Num(); i++) {
+			if (Items[i].ItemID == InItemID) {
+				AmountInInvent = AmountInInvent + Items[i].Amount;
+			}
+		}
+
+		// If there is enough to remove, then iterate over the array finding all matching IDs
+		// Remove amounts of items from each ID until either enough is removed or that index is now empty
+		// On index empty, remove it from the array
+		if (AmountInInvent >= Amount) {
+			for (int i = 0; i < Items.Num(); i++) {
+				if (Items[i].ItemID == InItemID && Amount > 0) {
+					Amount = Items[i].RemoveItems(Amount);
+					if (Amount <= 0) {
+						Items.RemoveAt(i);
+						i--;
+						Amount = Amount * -1;
+					}
+				}
+			}
+		}
+	}
+}
+
+TArray<FItemData> UInventoryComponent::SortInventoryAlphabetically(TEnumAsByte<EItemType> Type)
+{
+	if (Inventory.IsEmpty()) {
+		return TArray<FItemData>();
+	}
+
+	TArray<FItemData> SortedArray;
+	TArray<FItemData> ArrayToSort;
+
+	// Get the items that require sorting
+	if (Type == EItemType::Item) {
+		ArrayToSort = GetAllInventoryItems();
+	}
+	else {
+		ArrayToSort = GetInventoryItemsOfType(Type);
+	}
+
+	// For each item in the player's inventory
+	for (FItemData i : ArrayToSort) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the strings
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				int comparisonResult = i.Name.Compare(SortedArray[j].Name, ESearchCase::IgnoreCase);
+
+				// If they are the same
+				if (comparisonResult == 0) {
+					// Insert i after j
+					SortedArray.Insert(i, j + 1);
+					break;
+				}
+				// If they are less (i is earlier on in the alphabet)
+				else if (comparisonResult <= -1) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				// If they are lated (i is later on in the alphabet)
+				else if (comparisonResult >= 1) {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+
+	// Update the inventory with the new sorted items
+	return SortedArray;
+}
+
+TArray<FItemData> UInventoryComponent::SortInventoryNewest(TEnumAsByte<EItemType> Type)
+{
+	if (Inventory.IsEmpty()) {
+		return TArray<FItemData>();
+	}
+
+	TArray<FItemData> SortedArray;
+	TArray<FItemData> ArrayToSort;
+
+	// Get the items that require sorting
+	if (Type == EItemType::Item) {
+		ArrayToSort = GetAllInventoryItems();
+	}
+	else {
+		ArrayToSort = GetInventoryItemsOfType(Type);
+	}
+
+	// For each item in the player's inventory
+	for (FItemData i : ArrayToSort) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the InventoryOrder
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				// If they are less (i is earlier on in the alphabet)
+				if (i.Order <= SortedArray[j].Order) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				// If they are lated (i is later on in the alphabet)
+				else {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+	// Update the inventory with the new sorted items
+	Algo::Reverse(SortedArray);
+	return SortedArray;
+}
+
+TArray<FItemData> UInventoryComponent::SortInventoryOldest(TEnumAsByte<EItemType> Type)
+{
+	if (Inventory.IsEmpty()) {
+		return TArray<FItemData>();
+	}
+
+	TArray<FItemData> SortedArray;
+	TArray<FItemData> ArrayToSort;
+
+	// Get the items that require sorting
+	if (Type == EItemType::Item) {
+		ArrayToSort = GetAllInventoryItems();
+	}
+	else {
+		ArrayToSort = GetInventoryItemsOfType(Type);
+	}
+
+	// For each item in the player's inventory
+	for (FItemData i : ArrayToSort) {
+
+		// Check if it is the first item to sort.  If so, add it
+		if (SortedArray.Num() == 0) {
+			SortedArray.Add(i);
+		}
+		// If it is the second onwards item, then continue
+		else {
+			// For each item in the SortedArray, compare the InventoryOrder
+			for (int j = 0; j < SortedArray.Num(); j++) {
+				// If they are less (i is earlier on in the alphabet)
+				if (i.Order <= SortedArray[j].Order) {
+					// Insert i after j
+					SortedArray.Insert(i, j);
+					break;
+				}
+				// If they are lated (i is later on in the alphabet)
+				else {
+					if (j + 1 >= SortedArray.Num()) {
+						// Insert i at the end of the array
+						SortedArray.Insert(i, SortedArray.Num());
+						break;
+					}
+					continue;
+				}
+			}
+		}
+	}
+	// Update the inventory with the new sorted items
+	return SortedArray;
+}
+
+bool UInventoryComponent::GetItemsExistInInventory(TArray<FCraftingItemData> Items, TEnumAsByte<EItemType> Type)
+{
+	TArray<FItemData> ArrayToSearch;
+
+	// Get the items that require sorting
+	if (Type == EItemType::Item) {
+		ArrayToSearch = GetAllInventoryItems();
+	}
+	else {
+		ArrayToSearch = GetInventoryItemsOfType(Type);
+	}
+
+	if (ArrayToSearch.IsEmpty() == false) {
+		for (FCraftingItemData i : Items) {
+			for (FItemData j : ArrayToSearch) {
+				if (i.ID == j.ItemID) {
+					i.Amount -= j.Amount;
+					if (i.Amount <= 0) {
+						UE_LOG(LogTemp, Warning, TEXT("eno"));
+						break;
+					}
+				}
+			}
+			if (i.Amount > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}

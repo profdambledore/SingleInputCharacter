@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FItemConst GetItemData(FName InID);
 
+	// Called to return weapon data
+	FWeaponData GetWeaponDataFromID(FName InID);
+
 	// Called to return a recipe of a submitted recipe ID
 	UFUNCTION(BlueprintCallable)
 	FCraftingConst GetRecipeDataFromID(FName InID);
@@ -104,11 +107,14 @@ protected:
 
 };
 
+// Convert from template to function
+// Didnt work as expected
 template<typename T>
 inline T AItemManager::GetItemDataFromID(FName InID, TEnumAsByte<EItemType> InType)
 {
 	switch (InType) {
 	case EItemType::Weapon:
+		//return (T)FWeaponData();
 		break;
 
 	case EItemType::Consumable:
@@ -116,7 +122,7 @@ inline T AItemManager::GetItemDataFromID(FName InID, TEnumAsByte<EItemType> InTy
 
 	default:
 		FItemConst* FoundItem = ItemDataTable->FindRow<FItemConst>(InID, "", true);
-		return *FoundItem;
+		return (T)*FoundItem;
 		break;
 	}
 	return T();

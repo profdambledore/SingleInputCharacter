@@ -36,6 +36,9 @@ void USI_InventoryState::NativeConstruct()
 
 	// Close Menu Button Release
 	CloseMenuButton->OnReleased.AddDynamic(this, &USI_InventoryState::OnCloseMenuButtonReleased);
+
+	// Selected Item Used Button Release
+	SelectedItemUseButton->OnReleased.AddDynamic(this, &USI_InventoryState::OnSelectedItemUseButtonReleased);
 }
 
 void USI_InventoryState::SynchronizeProperties()
@@ -139,6 +142,11 @@ void USI_InventoryState::OnDisplayMaterialsReleased()
 	DisplayInventoryItems();
 }
 
+void USI_InventoryState::OnSelectedItemUseButtonReleased()
+{
+	Inventory->UseItem(SelectedItem);
+}
+
 void USI_InventoryState::OnCloseMenuButtonReleased()
 {
 	PlayerUI->SwapActiveUIState("InGame");
@@ -152,6 +160,8 @@ void USI_InventoryState::UpdateDescriptionBox(FName InID, int Amount, int Order,
 	// Update the CurrentSelectedItem with the new slot
 	CurrentSelectedItem = NewSlot;
 
+	SelectedItem = Order;
+
 	// Get the item data from the Data Table
 	FItemConst NewItem = ItemManager->GetItemDataFromID<FItemConst>(InID, EItemType::Item);
 
@@ -161,6 +171,14 @@ void USI_InventoryState::UpdateDescriptionBox(FName InID, int Amount, int Order,
 
 	// Update the mesh being shown in the Item Display
 	ItemManager->SetNewMeshTarget(NewItem.StaticMesh, NewItem.SkelMesh, 100);
+
+	// Check if the item is a weapon.  If so, display the button to equip.
+	if (NewItem.Type == EItemType::Weapon) {
+		SelectedItemUseButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	else {
+		SelectedItemUseButton->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void USI_InventoryState::ClearDescriptionBox()

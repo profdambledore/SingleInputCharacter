@@ -39,6 +39,9 @@ public:
 	// Called to remove an item from the inventory
 	void RemoveItemFromInventory(FName InItemID, int Amount);
 
+	// Called to use an item in the inventory
+	void UseItem(int Order);
+
 	// Called to sort the inventory in alphabetical order
 	TArray<FItemData> SortInventoryAlphabetically(TEnumAsByte<EItemType> Type);
 
@@ -48,6 +51,9 @@ public:
 	// Called to sort the inventory by oldest item first
 	TArray<FItemData> SortInventoryOldest(TEnumAsByte<EItemType> Type);
 
+	// Called to get the item at the inventory order
+	FItemData GetItemAtInventoryOrder(int Order);
+
 	// Called to get if all items exist in the inventory
 	bool GetItemsExistInInventory(TArray<FCraftingItemData> Items, TEnumAsByte<EItemType>);
 
@@ -56,6 +62,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	/// -- Pointers --
+	// Pointer to the owner of this inventory
+	AActor* InventoryOwner = nullptr;
+
 	/// -- Inventory Data --
 	// Enum to designate how the inventory is currently sorted / when resorted
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")
@@ -72,7 +82,5 @@ protected:
 
 	/// -- Pointers --
 	// Pointer to the ItemManager object
-	class AItemManager* ItemManager = nullptr;
-
-		
+	class AItemManager* ItemManager = nullptr;	
 };

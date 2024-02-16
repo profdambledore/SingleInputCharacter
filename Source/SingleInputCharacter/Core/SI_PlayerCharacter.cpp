@@ -5,8 +5,7 @@
 
 #include "Character/InventoryComponent.h"
 #include "Character/CraftingComponent.h"
-
-
+#include "Item/WeaponItem.h"
 
 // Sets default values
 ASI_PlayerCharacter::ASI_PlayerCharacter()
@@ -26,6 +25,7 @@ ASI_PlayerCharacter::ASI_PlayerCharacter()
 
 	// Add the InventoryComponent to the character
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+	InventoryComponent->InventoryOwner = this;
 
 	// Add the crafting component to the character
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("Crafting Component"));
@@ -91,4 +91,17 @@ void ASI_PlayerCharacter::RotateCameraByStep(bool bRotateClockwise)
 	}
 	// Then set the rotation based on the current step * the rotation step
 	CameraSpringArm->SetRelativeRotation(FRotator(CameraSpringArm->GetRelativeRotation().Pitch, CurrentStep * RotationStep, 0.0f));
+}
+
+void ASI_PlayerCharacter::EquipWeapon(FItemData WeaponData)
+{
+	// Check if a weapon object has been created.  If not, create one now
+	if (!EquippedWeapon) {
+		FActorSpawnParameters SpawnParams;
+		EquippedWeapon = GetWorld()->SpawnActor<AWeaponItem>(AWeaponItem::StaticClass(), FVector(), FRotator(), SpawnParams);
+		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "");
+	}
+
+	// Setup the weapon with the new data
+	EquippedWeapon->SetupItem(WeaponData);
 }

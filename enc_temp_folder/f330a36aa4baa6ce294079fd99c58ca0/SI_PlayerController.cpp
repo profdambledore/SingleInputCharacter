@@ -113,7 +113,6 @@ void ASI_PlayerController::InputAction(const FInputActionValue& Value)
 		// If the trace hit a item, check that it doesn't have a owner already
 		if (TraceHit.GetActor() != nullptr) {
 			if (TraceHit.GetActor()->IsA(AParentItem::StaticClass())) {
-				UE_LOG(LogTemp, Warning, TEXT("Hit Item"));
 				AParentItem* HitItem = Cast<AParentItem>(TraceHit.GetActor());
 				if (HitItem->Owner == nullptr) {
 					// Move to the item and pick it up

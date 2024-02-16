@@ -2,6 +2,7 @@
 
 
 #include "Character/InventoryComponent.h"
+#include "Core/SI_PlayerCharacter.h"
 
 #include "Item/ItemManager.h"
 
@@ -125,6 +126,17 @@ void UInventoryComponent::RemoveItemFromInventory(FName InItemID, int Amount)
 					}
 				}
 			}
+		}
+	}
+}
+
+void UInventoryComponent::UseItem(int Order)
+{
+	// Check if the selected item is a weapon.  If so, equip it
+	FItemData Item = GetItemAtInventoryOrder(Order);
+	if (Item.Order != -1) {
+		if (ItemManager->GetItemDataFromID<FItemConst>(Item.ItemID, EItemType::Item).Type == Weapon) {
+			Cast<ASI_PlayerCharacter>(InventoryOwner)->EquipWeapon(Item);
 		}
 	}
 }
@@ -287,6 +299,16 @@ TArray<FItemData> UInventoryComponent::SortInventoryOldest(TEnumAsByte<EItemType
 	}
 	// Update the inventory with the new sorted items
 	return SortedArray;
+}
+
+FItemData UInventoryComponent::GetItemAtInventoryOrder(int Order)
+{
+	for (FItemData i : GetAllInventoryItems()) {
+		if (i.Order == Order) {
+			return i;
+		}
+	}
+	return FItemData("", "", 0, -1);
 }
 
 bool UInventoryComponent::GetItemsExistInInventory(TArray<FCraftingItemData> Items, TEnumAsByte<EItemType> Type)

@@ -76,6 +76,10 @@ protected:
 	UFUNCTION()
 	void OnDisplayMaterialsReleased();
 
+	// Button OnRelease to use the current selected item
+	UFUNCTION()
+	void OnSelectedItemUseButtonReleased();
+
 	// Button OnRelease to exit the inventory
 	UFUNCTION()
 	void OnCloseMenuButtonReleased();

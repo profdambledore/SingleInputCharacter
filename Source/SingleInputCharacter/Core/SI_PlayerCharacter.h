@@ -32,6 +32,10 @@ public:
 	// Called to rotate the camera by CameraRotationStep in a direction.  True if rotation is clockwise.
 	void RotateCameraByStep(bool bRotateClockwise);
 
+	/// -- Weapons -
+	// Called to equip a new weapon
+	void EquipWeapon(FItemData WeaponID);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,6 +53,10 @@ public:
 	// Crafting Component
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	class UCraftingComponent* CraftingComponent;
+
+	/// -- Pointers -- 
+	// Pointer to the player's weapon
+	class AWeaponItem* EquippedWeapon = nullptr;
 
 
 protected:

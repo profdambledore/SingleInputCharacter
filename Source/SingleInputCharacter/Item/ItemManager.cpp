@@ -34,6 +34,10 @@ AItemManager::AItemManager()
 	ConstructorHelpers::FObjectFinder<UDataTable>CDTObject(TEXT("/Game/Core/Items/DT_CraftingConst"));
 	if (CDTObject.Succeeded()) { CraftingDataTable = CDTObject.Object; }
 
+	// Get a reference to the crafting data table
+	ConstructorHelpers::FObjectFinder<UDataTable>WDTObject(TEXT("/Game/Core/Items/DT_WeaponConst"));
+	if (WDTObject.Succeeded()) { WeaponDataTable = WDTObject.Object; }
+
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -80,6 +84,11 @@ void AItemManager::ClearMeshTarget()
 FItemConst AItemManager::GetItemData(FName InID)
 {
 	return GetItemDataFromID<FItemConst>(InID, EItemType::Item);
+}
+
+FWeaponData AItemManager::GetWeaponDataFromID(FName InID)
+{
+	return *WeaponDataTable->FindRow<FWeaponData>(InID, "", true);;
 }
 
 FCraftingConst AItemManager::GetRecipeDataFromID(FName InID)

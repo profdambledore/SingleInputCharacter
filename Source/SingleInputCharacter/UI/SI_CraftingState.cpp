@@ -13,6 +13,18 @@ void USI_CraftingState::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	// Sort Materials Button Release
+	SortAllButton->OnReleased.AddDynamic(this, &USI_CraftingState::OnDisplayItemsReleased);
+
+	// Sort Alphabetical Button Release
+	SortWeaponsButton->OnReleased.AddDynamic(this, &USI_CraftingState::OnDisplayWeaponsReleased);
+
+	// Sort Newest Button Release
+	SortArmourButton->OnReleased.AddDynamic(this, &USI_CraftingState::OnDisplayArmourReleased);
+
+	// Sort Oldest Button Release
+	SortMaterialsButton->OnReleased.AddDynamic(this, &USI_CraftingState::OnDisplayMaterialsReleased);
+
 	// Craft Button Release
 	CraftButton->OnReleased.AddDynamic(this, &USI_CraftingState::OnCraftButtonReleased);
 
@@ -58,7 +70,7 @@ void USI_CraftingState::DisplayCraftingRecipes()
 
 		}
 		else{
-			ItemManager->GetRecipeDataOfStationAndType(ItemTypeToDisplay, Crafting->GetActiveStation());
+			UpdateListViewWithItems(ItemManager->GetRecipeDataOfStationAndType(ItemTypeToDisplay, Crafting->GetActiveStation()));
 			CurrentSortText->SetText(FText::FromName(UEnum::GetValueAsName(ItemTypeToDisplay)));
 		}
 	}

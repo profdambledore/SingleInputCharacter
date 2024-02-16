@@ -128,12 +128,14 @@ TArray<FCraftingConst> AItemManager::GetRecipeDataOfStationAndType(TEnumAsByte<E
 
 	TArray<FCraftingConst> MatchingItems;
 
+	//UE_LOG(LogTemp, Warning, TEXT("InType = %s"), *UEnum::GetValueAsString(InType));
+
 	// For each recipe in the data table, check if it has the matching station or "None" station
 	for (FName i : OutRows) {
 		CurrentRow = CraftingDataTable->FindRow<FCraftingConst>(i, "", true);
 		if (CurrentRow->Station == EStationType::None || CurrentRow->Station == InStation) {
 			// If it does, check if the output item matches the InType
-			if (GetItemDataFromID<FItemConst>(CurrentRow->ID, EItemType::Item).Type == InType) {
+			if (GetItemDataFromID<FItemConst>(CurrentRow->Output.ID, EItemType::Item).Type == InType) {
 					MatchingItems.Add(*CurrentRow);
 			}
 		}

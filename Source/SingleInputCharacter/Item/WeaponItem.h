@@ -22,6 +22,9 @@ public:
 	// Called to setup a new item
 	virtual void SetupItem(FItemData NewItemData) override;
 
+	// Called to clear the weapon data
+	void ClearWeapon();
+
 	// -- Weapon Functions --
 	// Called to return the weapon range
 	float GetWeaponRange();

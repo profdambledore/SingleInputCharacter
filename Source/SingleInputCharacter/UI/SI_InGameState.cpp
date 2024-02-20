@@ -36,8 +36,9 @@ void USI_InGameState::OnStateDeactivate()
 {
 }
 
-void USI_InGameState::UpdateHealthBar()
+void USI_InGameState::UpdateHealthBar(int CurrentHealth, int MaxHealth)
 {
+	PlayerHealthBar->SetPercent(CurrentHealth / MaxHealth);
 }
 
 void USI_InGameState::OnCameraAngleButtonReleased()

@@ -6,19 +6,18 @@
 #include "World/ParentInteractable.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Character/InventoryComponent.h"
 
-#include "Data/CraftingData.h"
-
-#include "ParentCraftingStation.generated.h"
+#include "ParentStorage.generated.h"
 
 UCLASS()
-class SINGLEINPUTCHARACTER_API AParentCraftingStation : public AParentInteractable
+class SINGLEINPUTCHARACTER_API AParentStorage : public AParentInteractable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	AParentCraftingStation();
+	AParentStorage();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -29,15 +28,19 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	/// -- Components --
 	// Static Mesh Component for the items static mesh
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* StationMesh = nullptr;
 
-	/// -- Station Data --
-	// Enum denoting the type of station
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station Stats")
-	TEnumAsByte<EStationType> Type;
+	// Inventory Component
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class UInventoryComponent* InventoryComponent;
 
+	/// -- Storage Properties --
+	// String denoting the storages name
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Storage Properties")
+	FString StorageName;
+	
 };

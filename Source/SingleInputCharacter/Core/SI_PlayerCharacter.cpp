@@ -5,6 +5,7 @@
 
 #include "Character/InventoryComponent.h"
 #include "Character/CraftingComponent.h"
+#include "Character/StatsComponent.h"
 #include "Item/WeaponItem.h"
 
 // Sets default values
@@ -30,6 +31,10 @@ ASI_PlayerCharacter::ASI_PlayerCharacter()
 	// Add the crafting component to the character
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("Crafting Component"));
 	CraftingComponent->InventoryComponent = InventoryComponent;
+
+	// Add the crafting component to the character
+	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("Stats Component"));
+	InventoryComponent->StatsComponent = StatsComponent;
 
 	// Find and store the test mesh
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>SMObject(TEXT("/Game/PolygonApocalypse/Meshes/Characters/SK_Chr_Biker_Male_01"));
@@ -99,9 +104,16 @@ void ASI_PlayerCharacter::EquipWeapon(FItemData WeaponData)
 	if (!EquippedWeapon) {
 		FActorSpawnParameters SpawnParams;
 		EquippedWeapon = GetWorld()->SpawnActor<AWeaponItem>(AWeaponItem::StaticClass(), FVector(), FRotator(), SpawnParams);
-		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "");
+		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Hand_L");
 	}
 
 	// Setup the weapon with the new data
 	EquippedWeapon->SetupItem(WeaponData);
+	EquippedWeaponOrder = WeaponData.Order;
+}
+
+void ASI_PlayerCharacter::UnequipWeapon()
+{
+	EquippedWeapon->ClearWeapon();
+	EquippedWeaponOrder = -1;
 }

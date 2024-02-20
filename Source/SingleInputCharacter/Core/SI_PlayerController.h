@@ -22,6 +22,15 @@ public:
 	// Called to setup the inputs for this player controller
 	virtual void SetupInputComponent() override;
 
+	/// -- Character --
+	// Called to return the character pointer
+	ASI_PlayerCharacter* GetAICharacter();
+
+	/// -- UI --
+	// Called to return the UI pointer
+	UFUNCTION(BlueprintCallable)
+	USI_PlayerUI* GetPlayerUI();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,11 +38,6 @@ protected:
 	/// -- Inputs --
 	// Called to make the player interact with the world
 	void InputAction(const FInputActionValue& Value);
-
-	/// -- UI --
-	// Called to return the UI pointer
-	UFUNCTION(BlueprintCallable)
-	USI_PlayerUI* GetPlayerUI();
 
 protected:
 	/// -- Player --

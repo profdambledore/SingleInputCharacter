@@ -9,19 +9,19 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
-#include "SI_InventorySlot.generated.h"
+#include "SI_StorageSlot.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SINGLEINPUTCHARACTER_API USI_InventorySlot : public UUserWidget
+class SINGLEINPUTCHARACTER_API USI_StorageSlot : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 public:
 	virtual void NativeConstruct() override;
-	
+
 	// Called to un-select this slot
 	void UnSelectSlot();
 
@@ -53,13 +53,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	int SlotItemAmount;
 
-	// The amount of the item in this slot
+	// The order of the item in the inventory in this slot
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	int SlotItemOrder;
 
+	// Bool to denote if the item is in the player's inventory or the storage objects
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
+	bool bPlayerInvent;
+
 protected:
 	/// -- References --
-	// Pointer to the InventoryUI that the owning TileListView is placed in
+	// Pointer to the StorageState that the owning TileListView is placed in
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
-	class USI_InventoryState* InventoryUI = nullptr;
+	class USI_StorageState* StorageState = nullptr;
 };

@@ -3,7 +3,7 @@
 
 #include "Character/InventoryComponent.h"
 #include "Core/SI_PlayerCharacter.h"
-
+#include "Character/StatsComponent.h"
 #include "Item/ItemManager.h"
 
 // Sets default values for this component's properties
@@ -112,12 +112,30 @@ void UInventoryComponent::RemoveItemFromInventory(FName InItemID, int Amount)
 			}
 		}
 
+		ASI_PlayerCharacter* PlayerPointer = nullptr;
+		// Check if the item is a Weapon (or it is equipable)
+		if (NewItem.Type == Weapon) {
+			// Check if the owner of the inventory is a Player
+			if (InventoryOwner->IsA(ASI_PlayerCharacter::StaticClass())) {
+				// Cast to the player class (do it now, just incase the player ownes multiple weapons)
+				// Changes cast amount from n=AmountOfWeapons to n=1
+				PlayerPointer = Cast<ASI_PlayerCharacter>(InventoryOwner);
+			}
+		}
+
 		// If there is enough to remove, then iterate over the array finding all matching IDs
 		// Remove amounts of items from each ID until either enough is removed or that index is now empty
 		// On index empty, remove it from the array
 		if (AmountInInvent >= Amount) {
 			for (int i = 0; i < Items.Num(); i++) {
 				if (Items[i].ItemID == InItemID && Amount > 0) {
+					// Check if the item is currently equipped
+					if (PlayerPointer) {
+						// If it is, unequip the weapon
+						if (PlayerPointer->EquippedWeaponOrder == Items[i].Order) {
+							PlayerPointer->UnequipWeapon();
+						}
+					}
 					Amount = Items[i].RemoveItems(Amount);
 					if (Amount <= 0) {
 						Items.RemoveAt(i);
@@ -127,6 +145,9 @@ void UInventoryComponent::RemoveItemFromInventory(FName InItemID, int Amount)
 				}
 			}
 		}
+
+		// Add the array back to the map in the correct key
+		Inventory.Add(NewItem.Type, FInventoryTypeData(Items));
 	}
 }
 
@@ -305,10 +326,12 @@ FItemData UInventoryComponent::GetItemAtInventoryOrder(int Order)
 {
 	for (FItemData i : GetAllInventoryItems()) {
 		if (i.Order == Order) {
+			UE_LOG(LogTemp, Warning, TEXT("Found"));
 			return i;
 		}
 	}
-	return FItemData("", "", 0, -1);
+	UE_LOG(LogTemp, Warning, TEXT("Not Found"));
+	return FItemData("Not Found", "", 0, -1);
 }
 
 bool UInventoryComponent::GetItemsExistInInventory(TArray<FCraftingItemData> Items, TEnumAsByte<EItemType> Type)

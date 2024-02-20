@@ -28,6 +28,12 @@ void AWeaponItem::SetupItem(FItemData NewItemData)
 	}
 }
 
+void AWeaponItem::ClearWeapon()
+{
+	ItemMesh->SetSkeletalMesh(nullptr);
+	WeaponData = FWeaponData();;
+}
+
 float AWeaponItem::GetWeaponRange()
 {
 	return WeaponData.Range;

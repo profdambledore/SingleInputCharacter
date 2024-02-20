@@ -39,6 +39,11 @@ void ASI_AIController::OnPossess(APawn* InPawn)
 	}
 }
 
+void ASI_AIController::SetPCBlackboardValue(UObject* InController)
+{
+	BBC->SetValueAsObject(FName("PlayerController"), InController);
+}
+
 void ASI_AIController::SetActiveStateToMove(FVector InLoc)
 {
 	// Clear the state to stop any other commands currently firing
@@ -51,9 +56,11 @@ void ASI_AIController::SetActiveStateToMove(FVector InLoc)
 void ASI_AIController::SetActiveStateToPickup(AParentItem* ItemToCollect)
 {
 	BBC->SetValueAsString(FName("State"), "PickupItem");
-	BBC->SetValueAsObject(FName("PickupItem"), ItemToCollect);
+	BBC->SetValueAsObject(FName("ObjectInUse"), ItemToCollect);
 }
 
-void ASI_AIController::SetActiveStateToStation(AParentCraftingStation* StationToAccess)
+void ASI_AIController::SetActiveStateToStation(AActor* StationToAccess)
 {
+	BBC->SetValueAsString(FName("State"), "UseInteractable");
+	BBC->SetValueAsObject(FName("ObjectInUse"), StationToAccess);
 }

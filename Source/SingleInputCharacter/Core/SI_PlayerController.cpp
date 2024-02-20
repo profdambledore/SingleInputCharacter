@@ -13,7 +13,8 @@
 #include "UI/SI_PlayerUI.h"
 #include "Core/InputConfigData.h"
 #include "Item/ParentItem.h"
-#include "World/ParentCraftingStation.h"
+#include "World/ParentInteractable.h"
+#include "Character/StatsComponent.h"
 
 // Constructor
 ASI_PlayerController::ASI_PlayerController()
@@ -49,7 +50,7 @@ void ASI_PlayerController::BeginPlay()
 	// Then spawn it's controller and make it possess the person
 	AIControl = GetWorld()->SpawnActor<ASI_AIController>(ASI_AIController::StaticClass(), FVector(), FRotator(), FActorSpawnParameters());
 	AIControl->Possess(AICharacter);
-	//AIControl->SetPCBlackboardValue(this);
+	AIControl->SetPCBlackboardValue(this);
 	//AICharacter->AI = AIControl;
 
 	// Setup the PlayerClass on the AICharacter's spring arm
@@ -59,6 +60,8 @@ void ASI_PlayerController::BeginPlay()
 	if (UI) {
 		UI->AddToViewport();
 		UI->SetupUIStates(AICharacter);
+		AICharacter->StatsComponent->PlayerUI = UI;
+		AICharacter->StatsComponent->SetupStats();
 	}
 
 	// Set the mouse viewable on screen
@@ -107,8 +110,6 @@ void ASI_PlayerController::InputAction(const FInputActionValue& Value)
 		FHitResult TraceHit;
 		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, MouseWorldLocation, MouseWorldLocation + (MouseWorldDirection * 4000), ECC_WorldDynamic, FCollisionQueryParams(FName("DistTrace"), true));
 
-		//UE_LOG(LogTemp, Warning, TEXT("actor hit name = %s"), *TraceHit.GetActor()->GetName());
-
 		// Compare what the trace hit
 		// If the trace hit a item, check that it doesn't have a owner already
 		if (TraceHit.GetActor() != nullptr) {
@@ -121,10 +122,10 @@ void ASI_PlayerController::InputAction(const FInputActionValue& Value)
 					bStateUpdate = true;
 				}
 			}
-			// Else, check if the trace hit a station
-			if (TraceHit.GetActor()->IsA(AParentCraftingStation::StaticClass())) {
-				AParentCraftingStation* HitStation = Cast<AParentCraftingStation>(TraceHit.GetActor());
-				AIControl->SetActiveStateToStation(HitStation);
+			// Else, check if the trace hit a interactable
+			if (TraceHit.GetActor()->IsA(AParentInteractable::StaticClass())) {
+				//AParentInteractable* HitStation = Cast<AParentCraftingStation>(TraceHit.GetActor());
+				AIControl->SetActiveStateToStation(TraceHit.GetActor());
 				bStateUpdate = true;
 			}
 			else if (!bStateUpdate) {
@@ -132,6 +133,11 @@ void ASI_PlayerController::InputAction(const FInputActionValue& Value)
 			}
 		}
 	}
+}
+
+ASI_PlayerCharacter* ASI_PlayerController::GetAICharacter()
+{
+	return AICharacter;
 }
 
 USI_PlayerUI* ASI_PlayerController::GetPlayerUI()

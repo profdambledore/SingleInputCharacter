@@ -48,6 +48,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	class USI_CraftingState* CraftingState = nullptr;
 
+	// State displaying the storage menu
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	class USI_StorageState* StorageState = nullptr;
+
 
 protected:
 	// Pointer to the current active state

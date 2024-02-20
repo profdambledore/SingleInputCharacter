@@ -27,7 +27,7 @@ public:
 	virtual void OnStateDeactivate() override;
 
 	// Called to update the health bar percent based on the SingleInputPerson's current health
-	void UpdateHealthBar();
+	void UpdateHealthBar(int CurrentHealth, int MaxHealth);
 
 protected:
 	/// -- Button Functions --

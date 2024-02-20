@@ -6,9 +6,11 @@
 #include "UI/SI_InGameState.h"
 #include "UI/SI_InventoryState.h"
 #include "UI/SI_CraftingState.h"
+#include "UI/SI_StorageState.h"
 #include "Core/SI_PlayerCharacter.h"
 #include "Character/InventoryComponent.h"
 #include "Character/CraftingComponent.h"
+#include "Character/StatsComponent.h"
 
 void USI_PlayerUI::NativeConstruct()
 {
@@ -34,6 +36,10 @@ void USI_PlayerUI::SetupUIStates(ASI_PlayerCharacter* PlayerCharacter)
 	CraftingState->PlayerUI = this;
 	CraftingState->Crafting = PlayerCharacter->CraftingComponent;
 	CraftingState->Inventory = PlayerCharacter->InventoryComponent;
+
+	// Setup the StorageState
+	StorageState->PlayerUI = this;
+	StorageState->PlayerInventory = PlayerCharacter->InventoryComponent;
 }
 
 void USI_PlayerUI::SwapActiveUIStateIndex(int Index)
@@ -52,6 +58,10 @@ void USI_PlayerUI::SwapActiveUIStateIndex(int Index)
 
 		case 2:
 			CraftingState->OnStateActive();
+			break;
+
+		case 3:
+			StorageState->OnStateActive();
 			break;
 
 		default:
@@ -87,6 +97,15 @@ void USI_PlayerUI::SwapActiveUIState(FString StateName)
 			}
 			StateSwitcher->SetActiveWidgetIndex(2);
 			CraftingState->OnStateActive();
+		}
+	}
+	else if (StateName == "Storage") {
+		if (CurrentState != StorageState) {
+			if (CurrentState) {
+				CurrentState->OnStateDeactivate();
+			}
+			StateSwitcher->SetActiveWidgetIndex(3);
+			StorageState->OnStateActive();
 		}
 	}
 }

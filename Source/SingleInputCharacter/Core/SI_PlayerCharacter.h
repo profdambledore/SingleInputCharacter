@@ -36,6 +36,9 @@ public:
 	// Called to equip a new weapon
 	void EquipWeapon(FItemData WeaponID);
 
+	// Called to un-equip the equipped weapon
+	void UnequipWeapon();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,9 +57,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	class UCraftingComponent* CraftingComponent;
 
+	// Crafting Component
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class UStatsComponent* StatsComponent;
+
 	/// -- Pointers -- 
 	// Pointer to the player's weapon
 	class AWeaponItem* EquippedWeapon = nullptr;
+
+	// Int denoting the inventory slot the weapon exists in
+	int EquippedWeaponOrder = -1;
 
 
 protected:

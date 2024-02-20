@@ -66,6 +66,10 @@ public:
 	// Pointer to the owner of this inventory
 	AActor* InventoryOwner = nullptr;
 
+	/// -- Pointers --
+	// Pointer to the users InventoryComponent
+	class UStatsComponent* StatsComponent = nullptr;
+
 	/// -- Inventory Data --
 	// Enum to designate how the inventory is currently sorted / when resorted
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Data")

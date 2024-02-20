@@ -24,7 +24,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	// Called to update the BehavoirTree with the PlayerController value
-	//void SetPCBlackboardValue(UObject* InController);
+	void SetPCBlackboardValue(UObject* InController);
 
 	/// -- States --
 	// Called to change the AI state to Move
@@ -34,7 +34,7 @@ public:
 	void SetActiveStateToPickup(class AParentItem* ItemToCollect);
 
 	// Called to change the AI state to MoveToCraftingStation
-	void SetActiveStateToStation(class AParentCraftingStation* StationToAccess);
+	void SetActiveStateToStation(class AActor* StationToAccess);
 
 protected:
 	// Called when the game starts or when spawned

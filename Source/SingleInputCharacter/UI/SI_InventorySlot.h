@@ -57,6 +57,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
 	int SlotItemOrder;
 
+	// Pointer to the object data that is created
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot Item")
+	UObject* SlotItemData = nullptr;
+
 protected:
 	/// -- References --
 	// Pointer to the InventoryUI that the owning TileListView is placed in

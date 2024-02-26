@@ -100,7 +100,7 @@ void UStatsComponent::StartConsumableBuff(TEnumAsByte<EConsumableType> BuffType,
 		// Check if a StatBuff matching the new buff's type is active
 		if (ActiveBuffMap.Find("StatBuff" + StatTag)) {
 			// If so, update that buff object
-			Cast<AStatBuff>(ActiveBuffMap.FindRef("StatBuff" + StatTag))->SetupReBuff(BaseStat, Multiplier, Duration);
+			Cast<AStatBuff>(ActiveBuffMap.FindRef("StatBuff" + StatTag))->SetupBuff("StatBuff", StatTag, BaseStat, Multiplier, Duration);
 		}
 		else {
 			// Create a AStatBuff object, attach it to the owner of this component, then setup its stats

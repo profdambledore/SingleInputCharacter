@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "Data/ItemData.h"
+
+#include "Kismet/GameplayStatics.h"
+
 #include "StatsComponent.generated.h"
 
 
@@ -30,7 +35,20 @@ public:
 	// Called to heal the unit
 	void HealUnit(int Amount);
 
+	/// -- Buffs --
+	// Called to begin a stat buff (or debuff if Potency is negative)
+	void StartConsumableBuff(TEnumAsByte<EConsumableType> BuffType, FString StatTag, int BaseStat, float Multiplier, float Duration, float TickRate);
+
+	// Called to add a buff to this StatsComponent
+	void AddBuff(bool bBuff, class AParentBuffDebuff* Buff);
+
+	// Called to remove a buff from the map
+	void RemoveBuff(bool bBuff, FString Name);
+
 	/// -- Getting Stats --
+	// Called to get a stat based on a stat tag
+	float GetStatByTag(FString StatTag);
+
 	// Called to return the current health
 	int GetCurrentHealth();
 
@@ -42,6 +60,10 @@ public:
 
 	// Called to return the base damage increase
 	int GetUnitBonusDamage();
+
+	/// -- Setting Stats --
+	// Called to update a stat amount
+	void UpdateStat(FString StatTag, float ModificationAmount);
 
 protected:
 	// Called when the game starts
@@ -61,7 +83,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
 	int BaseDefence;
 
-	// Int denoting the object's defence bonus
+	// Int denoting the object's defence bonus (deprecate)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
 	int BonusDefence = 0;
 
@@ -76,6 +98,11 @@ public:
 	// Int denoting the units bonus damage 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
 	int BonusDamage = 0;
+
+	/// -- Buffs/Debuffs --
+	// TMap storing all timer handles related to buffs/debuffs
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<FString, class AParentBuffDebuff*> ActiveBuffMap;
 
 	/// -- Player Specific --
 	// Pointer to the PlayerUI owned by the player

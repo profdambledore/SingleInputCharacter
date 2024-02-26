@@ -145,6 +145,18 @@ void USI_InventoryState::OnDisplayMaterialsReleased()
 void USI_InventoryState::OnSelectedItemUseButtonReleased()
 {
 	Inventory->UseItem(SelectedItem);
+
+	// Update the specific UI elements
+	CurrentSelectedItem->SlotItemAmount -= 1;
+	if (CurrentSelectedItem->SlotItemAmount == 0) {
+		ItemTileView->RemoveItem(CurrentSelectedItem->SlotItemData);
+		ClearDescriptionBox();
+	}
+	else {
+		CurrentSelectedItem->SelectItemAmount->SetText(FText::FromString(FString::Printf(TEXT("x %i"), CurrentSelectedItem->SlotItemAmount)));
+		SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *ItemName, CurrentSelectedItem->SlotItemAmount)));
+	}
+	
 }
 
 void USI_InventoryState::OnCloseMenuButtonReleased()
@@ -165,20 +177,31 @@ void USI_InventoryState::UpdateDescriptionBox(FName InID, int Amount, int Order,
 	// Get the item data from the Data Table
 	FItemConst NewItem = ItemManager->GetItemDataFromID<FItemConst>(InID, EItemType::Item);
 
+	ItemName = NewItem.Name;
+
 	// Update the description box elements
-	SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *NewItem.Name, Amount)));
+	SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *ItemName, Amount)));
 	SelectedItemDesc->SetText(FText::FromString(*NewItem.Desc));
 
 	// Update the mesh being shown in the Item Display
 	ItemManager->SetNewMeshTarget(NewItem.StaticMesh, NewItem.SkelMesh, 100);
 
-	// Check if the item is a weapon.  If so, display the button to equip.
-	if (NewItem.Type == EItemType::Weapon) {
+	// Check if the item is a weapon or a consumable.  If so, display the button to equip.
+	if (NewItem.Type == EItemType::Weapon || EItemType::Consumable) {
 		SelectedItemUseButton->SetVisibility(ESlateVisibility::Visible);
 	}
 	else {
 		SelectedItemUseButton->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void USI_InventoryState::RefreshDescriptionBox()
+{
+	
+	// Get the item data from the Data Table
+	//FItemConst NewItem = ItemManager->GetItemDataFromID<FItemConst>(CurrentSelectedItem->SlotItemID, EItemType::Item);
+
+	//SelectedItemName->SetText(FText::FromString(FString::Printf(TEXT("%s - x %i"), *NewItem.Name, Amount)));
 }
 
 void USI_InventoryState::ClearDescriptionBox()

@@ -34,9 +34,16 @@ AItemManager::AItemManager()
 	ConstructorHelpers::FObjectFinder<UDataTable>CDTObject(TEXT("/Game/Core/Items/DT_CraftingConst"));
 	if (CDTObject.Succeeded()) { CraftingDataTable = CDTObject.Object; }
 
-	// Get a reference to the crafting data table
+	// Get a reference to the weapons data table
 	ConstructorHelpers::FObjectFinder<UDataTable>WDTObject(TEXT("/Game/Core/Items/DT_WeaponConst"));
 	if (WDTObject.Succeeded()) { WeaponDataTable = WDTObject.Object; }
+
+	// Get a reference to the consumables data table
+	ConstructorHelpers::FObjectFinder<UDataTable>ConDTObject(TEXT("/Game/Core/Items/DT_ConsumableConst"));
+	if (ConDTObject.Succeeded()) { 
+		UE_LOG(LogTemp, Warning, TEXT("Found Consumables"));
+		ConsumablesDataTable = ConDTObject.Object; 
+	}
 
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -89,6 +96,11 @@ FItemConst AItemManager::GetItemData(FName InID)
 FWeaponData AItemManager::GetWeaponDataFromID(FName InID)
 {
 	return *WeaponDataTable->FindRow<FWeaponData>(InID, "", true);;
+}
+
+FConsumableData AItemManager::GetConsumableDataFromID(FName InID)
+{
+	return *ConsumablesDataTable->FindRow<FConsumableData>(InID, "", true);
 }
 
 FCraftingConst AItemManager::GetRecipeDataFromID(FName InID)

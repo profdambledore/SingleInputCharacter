@@ -47,8 +47,7 @@ ASI_PlayerCharacter::ASI_PlayerCharacter()
 // Called when the game starts or when spawned
 void ASI_PlayerCharacter::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 // Called every frame

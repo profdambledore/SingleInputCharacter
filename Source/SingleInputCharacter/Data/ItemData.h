@@ -26,11 +26,10 @@ enum EItemType
 UENUM(BlueprintType, Category = "Items")
 enum EConsumableType
 {
-	Default UMETA(DisplayName = "Default"),
-	Damage UMETA(DisplayName = "Damage"),
-	Defence UMETA(DisplayName = "Defence"),
-	Heal UMETA(DisplayName = "Heal"),
+	Healing UMETA(DisplayName = "Healing"),
 	Regen UMETA(DisplayName = "Regen"),
+	StatBuff UMETA(DisplayName = "StatBuff"),
+	StatPercent UMETA(DisplayName = "StatPercent"),
 };
 
 // Enum denoting how the inventory should be sorted
@@ -193,21 +192,28 @@ struct SINGLEINPUTCHARACTER_API FConsumableData : public FTableRowBase
 public:
 	GENERATED_BODY();
 
-	/// -- Item Data --
-	// The main data of the item
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
-	//FItemData ItemData;
-
 	/// -- Consumable Stats --
 	// The type of consumable this item is
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
-	TEnumAsByte<EItemType> ConsumableType;
+	TEnumAsByte<EConsumableType> BuffType;
 
-	// The potency of the buff
+	// The stat type of the consumable (health, armour, damage)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
-	int Potency;
+	FString StatTag = "None";
+
+	// The base stat modification of the buff
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
+	int BaseStat;
+
+	// The multiplier/percent of the base stat modification buff 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
+	float Multiplier;
 
 	// The duration of the buff (-1 for instant)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
-	int Duration;
+	float Duration;
+
+	// The tick rate of the buff (how long between each buff additions)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
+	float TickRate;
 };

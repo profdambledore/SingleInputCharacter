@@ -31,6 +31,7 @@ void UInventoryComponent::BeginPlay()
 	Inventory.Add(Weapon, TArray<FItemData>());
 	Inventory.Add(Armour, TArray<FItemData>());
 	Inventory.Add(Material, TArray<FItemData>());
+	Inventory.Add(Consumable, TArray<FItemData>());
 	
 }
 
@@ -156,8 +157,16 @@ void UInventoryComponent::UseItem(int Order)
 	// Check if the selected item is a weapon.  If so, equip it
 	FItemData Item = GetItemAtInventoryOrder(Order);
 	if (Item.Order != -1) {
-		if (ItemManager->GetItemDataFromID<FItemConst>(Item.ItemID, EItemType::Item).Type == Weapon) {
+		FItemConst ItemCons = ItemManager->GetItemDataFromID<FItemConst>(Item.ItemID, EItemType::Item);
+		if (ItemCons.Type == Weapon) {
 			Cast<ASI_PlayerCharacter>(InventoryOwner)->EquipWeapon(Item);
+		}
+		else if (ItemCons.Type == Consumable) {
+			if (StatsComponent) {
+				FConsumableData ConsumCost = ItemManager->GetConsumableDataFromID(Item.ItemID);
+				StatsComponent->StartConsumableBuff(ConsumCost.BuffType, ConsumCost.StatTag, ConsumCost.BaseStat, ConsumCost.Multiplier, ConsumCost.Duration, ConsumCost.TickRate);
+				RemoveItemFromInventory(Item.ItemID, 1);
+			}
 		}
 	}
 }

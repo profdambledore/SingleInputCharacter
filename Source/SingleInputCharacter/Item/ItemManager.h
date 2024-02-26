@@ -46,6 +46,9 @@ public:
 	// Called to return weapon data
 	FWeaponData GetWeaponDataFromID(FName InID);
 
+	// Called to return consumable data
+	FConsumableData GetConsumableDataFromID(FName InID);
+
 	// Called to return a recipe of a submitted recipe ID
 	UFUNCTION(BlueprintCallable)
 	FCraftingConst GetRecipeDataFromID(FName InID);

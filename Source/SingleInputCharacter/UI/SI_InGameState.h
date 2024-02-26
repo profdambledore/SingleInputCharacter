@@ -7,6 +7,7 @@
 
 #include "Components/Button.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 
 #include "SI_InGameState.generated.h"
 
@@ -27,7 +28,7 @@ public:
 	virtual void OnStateDeactivate() override;
 
 	// Called to update the health bar percent based on the SingleInputPerson's current health
-	void UpdateHealthBar(int CurrentHealth, int MaxHealth);
+	void UpdateHealthBar(float CurrentHealth, float MaxHealth);
 
 protected:
 	/// -- Button Functions --
@@ -78,6 +79,11 @@ public:
 	// Progress Bar to display the player's health
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
 	UProgressBar* PlayerHealthBar = nullptr;
+
+	// Text Box to display the player's health
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UTextBlock* PlayerHealthText = nullptr;
+
 
 	// Button to open the inventory state
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")

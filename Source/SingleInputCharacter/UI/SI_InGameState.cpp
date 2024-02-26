@@ -36,9 +36,10 @@ void USI_InGameState::OnStateDeactivate()
 {
 }
 
-void USI_InGameState::UpdateHealthBar(int CurrentHealth, int MaxHealth)
+void USI_InGameState::UpdateHealthBar(float CurrentHealth, float MaxHealth)
 {
 	PlayerHealthBar->SetPercent(CurrentHealth / MaxHealth);
+	PlayerHealthText->SetText(FText::FromString(FString::Printf(TEXT("%i / %i"), FMath::FloorToInt(CurrentHealth), FMath::FloorToInt(MaxHealth))));
 }
 
 void USI_InGameState::OnCameraAngleButtonReleased()

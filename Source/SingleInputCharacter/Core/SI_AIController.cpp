@@ -56,11 +56,17 @@ void ASI_AIController::SetActiveStateToMove(FVector InLoc)
 void ASI_AIController::SetActiveStateToPickup(AParentItem* ItemToCollect)
 {
 	BBC->SetValueAsString(FName("State"), "PickupItem");
-	BBC->SetValueAsObject(FName("ObjectInUse"), ItemToCollect);
+	BBC->SetValueAsObject(FName("Target"), ItemToCollect);
 }
 
 void ASI_AIController::SetActiveStateToStation(AActor* StationToAccess)
 {
 	BBC->SetValueAsString(FName("State"), "UseInteractable");
-	BBC->SetValueAsObject(FName("ObjectInUse"), StationToAccess);
+	BBC->SetValueAsObject(FName("Target"), StationToAccess);
+}
+
+void ASI_AIController::SetActiveStateToCombat(AActor* Target)
+{
+	BBC->SetValueAsString(FName("State"), "Combat");
+	BBC->SetValueAsObject(FName("Target"), Target);
 }

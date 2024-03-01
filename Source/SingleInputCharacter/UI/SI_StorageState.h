@@ -29,6 +29,10 @@ public:
 
 	virtual void OnStateDeactivate() override;
 
+	/// -- 
+	// Called to update the state title name to the storages name
+	void UpdateTitleName(FString StorageName = "Storage");
+
 	/// -- Tile Views --
 	// Called to update the list view with an array of items of the player's inventory (in blueprint)
 	UFUNCTION(BlueprintImplementableEvent)
@@ -40,7 +44,7 @@ public:
 
 	// Called to display both the player and storage's inventory on the UI by the current sort type items
 	UFUNCTION()
-	void DisplayInventoryItems(class UInventoryComponent* NewStorageInventory);
+	void DisplayInventoryItems(class UInventoryComponent* NewStorageInventory, FString InStorageName = "Storage");
 
 	// Called to display the player's inventory on the UI by the current sort type items
 	UFUNCTION()
@@ -249,5 +253,8 @@ protected:
 
 	// Enum used to decide what order the items should be displayed in (Alphabetically, Newest First or Oldest First);
 	TEnumAsByte<EInventorySortType> StorageDisplayOrder = EInventorySortType::Alphabetically;
+
+	// FString that denotes the storages name
+	FString StorageName = "";
 
 };

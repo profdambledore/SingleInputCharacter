@@ -7,6 +7,7 @@
 #include "BuffSystem/ParentBuffDebuff.h"
 #include "BuffSystem/Buff/Regen.h"
 #include "BuffSystem/Buff/StatBuff.h"
+#include "Item/WeaponItem.h"
 
 // Sets default values for this component's properties
 UStatsComponent::UStatsComponent()
@@ -36,29 +37,47 @@ void UStatsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// ...
 }
 
-void UStatsComponent::SetupStats()
+void UStatsComponent::SetupStats(int InTeam)
 {
+	ObjectTeam = InTeam;
+
 	if (CurrentHealth == -1) {
 		CurrentHealth = MaxHealth / 2;
-		PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+		if (PlayerUI) {
+			PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+		}
 	}
 }
 
-void UStatsComponent::TakeDamage(int Amount)
+void UStatsComponent::TakeDamage(int Amount, float InCritChance, float InCritMulti)
 {
+	bool bHasCrit = false;
+	int IncomingDamage;
+
+	if (FMath::RandRange(0.0f, 1.0f) <= CritChance) {
+		IncomingDamage = Amount * CritDamage;
+	}
+
 	// Calculate the amount of damage the unit should take
-	int IncomingDamage = Amount * (BaseDefence + BonusDefence / BaseDefence + BonusDefence + DefenceCalcValue);
-	CurrentHealth -= IncomingDamage;
+	CurrentHealth -= IncomingDamage * (1.0f - (Defence / (Defence + DefenceCalcValue)));
 
 	// Check if the unit has lost all their health
-	if (CurrentHealth > 0) {
-		//Owner->Destroy();
+	if (CurrentHealth < 0) {
+		GetOwner()->Destroy();
 	}
 
 	// Finally, check if a InGameState pointer has been set.  If so, update the health bar
 	if (PlayerUI) {
 		PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
 	}
+}
+
+int UStatsComponent::CalculateCrit()
+{
+	if (FMath::RandRange(0.0f, 1.0f) <= CritChance) {
+		return Damage * CritDamage;
+	}
+	return Damage;
 }
 
 void UStatsComponent::HealUnit(int Amount)
@@ -71,7 +90,10 @@ void UStatsComponent::HealUnit(int Amount)
 		CurrentHealth = MaxHealth;
 	}
 
-	PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+	// If a players StatsComponent, update their health bar
+	if (PlayerUI) {
+		PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+	}
 }
 
 void UStatsComponent::StartConsumableBuff(TEnumAsByte<EConsumableType> BuffType, FString StatTag, int BaseStat, float Multiplier, float Duration, float TickRate)
@@ -135,9 +157,38 @@ float UStatsComponent::GetStatByTag(FString StatTag)
 		return MaxHealth;
 	}
 	else if (StatTag == "Armour") {
-		return BaseDefence;
+		return Defence;
+	}
+	else if (StatTag == "Damage") {
+		return Damage;
+	}
+	else if (StatTag == "CritChance") {
+		return CritChance;
+	}
+	else if (StatTag == "CritDamage") {
+		return CritDamage;
+	}
+	else if (StatTag == "AccuracyChargeTime") {
+		return AccuracyChargeTime;
+	}
+	else if (StatTag == "MinAccuracy") {
+		return MinAccuracy;
+	}
+	else if (StatTag == "MaxAccuracy") {
+		return MaxAccuracy;
+	}
+	else if (StatTag == "Range") {
+		return Range;
+	}
+	else if (StatTag == "FireRate") {
+		return FireRate;
 	}
 	return 0.0f;
+}
+
+int UStatsComponent::GetTeam()
+{
+	return ObjectTeam;
 }
 
 int UStatsComponent::GetCurrentHealth()
@@ -150,25 +201,65 @@ int UStatsComponent::GetMaxHealth()
 	return MaxHealth;
 }
 
-float UStatsComponent::GetUnitDamageMultiplier()
-{
-	return 0.0f;
-}
-
-int UStatsComponent::GetUnitBonusDamage()
-{
-	return 0;
-}
-
 void UStatsComponent::UpdateStat(FString StatTag, float ModificationAmount)
 {
 	if (StatTag == "Health") {
 		MaxHealth += ModificationAmount;
-		PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+		// If a players StatsComponent, update their health bar
+		if (PlayerUI) {
+			PlayerUI->InGameState->UpdateHealthBar(CurrentHealth, MaxHealth);
+		}
 
 	}
 	else if (StatTag == "Armour") {
-		BaseDefence += ModificationAmount;
+		Defence += ModificationAmount;
 	}
+	else if (StatTag == "Damage") {
+		Defence += ModificationAmount;
+	}
+	else if (StatTag == "CritChance") {
+		CritChance += ModificationAmount;
+	}
+	else if (StatTag == "CritDamage") {
+		CritDamage += ModificationAmount;
+	}
+	else if (StatTag == "AccuracyChargeTime") {
+		AccuracyChargeTime += ModificationAmount;
+	}
+	else if (StatTag == "MinAccuracy") {
+		MinAccuracy += ModificationAmount;
+	}
+	else if (StatTag == "MaxAccuracy") {
+		MaxAccuracy += ModificationAmount;
+	}
+	else if (StatTag == "Range") {
+		Range += ModificationAmount;
+	}
+	else if (StatTag == "FireRate") {
+		Defence += ModificationAmount;
+	}
+}
+
+void UStatsComponent::UpdateCombatStatsFromWeapon(FWeaponData WeaponStats, bool bEquipping, UTexture2D* WeaponIcon, int CurrentAmmo)
+{
+	// Set if we should increase or decrease the stats
+	int Multiply = 1;
+	if (!bEquipping) {
+		Multiply = -1;
+	}
+
+	// Then modify the stats
+	Damage += WeaponStats.Damage * Multiply;
+	CritChance += WeaponStats.CritChance * Multiply;
+	CritDamage += WeaponStats.CritDamage * Multiply;
+	AccuracyChargeTime += WeaponStats.AccuracyChargeTime * Multiply;
+	MinAccuracy += WeaponStats.MinAccuracy * Multiply;
+	MaxAccuracy += WeaponStats.MaxAccuracy * Multiply;
+	Range += WeaponStats.Range * Multiply;
+	FireRate += WeaponStats.FireRate * Multiply;
+
+	// Also, update the weapon icon and ammo amount
+	PlayerUI->InGameState->UpdateWeaponSlot(WeaponIcon);
+	PlayerUI->InGameState->UpdateAmmoCount(CurrentAmmo);
 }
 

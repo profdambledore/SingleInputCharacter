@@ -5,6 +5,8 @@
 #include "Core/SI_PlayerCharacter.h"
 #include "Character/StatsComponent.h"
 #include "Item/ItemManager.h"
+#include "UI/SI_PlayerUI.h"
+#include "UI/SI_InGameState.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -27,12 +29,12 @@ void UInventoryComponent::BeginPlay()
 		ItemManager = Cast<AItemManager>(FoundActor);
 	}
 
-	// Initalize the inventory map with empty arrays
-	Inventory.Add(Weapon, TArray<FItemData>());
-	Inventory.Add(Armour, TArray<FItemData>());
-	Inventory.Add(Material, TArray<FItemData>());
-	Inventory.Add(Consumable, TArray<FItemData>());
-	
+	// Initalize the inventory map with empty arrays if the array doesn't already exist
+	for (EItemType i : TEnumRange<EItemType>()) {
+		if (!Inventory.Contains(i)) {
+			Inventory.Add(i, TArray<FItemData>());
+		}
+	}
 }
 
 
@@ -42,6 +44,16 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UInventoryComponent::SetCurrentAmmoType(FName InItemID)
+{
+	if (InItemID != "") {
+		AmmoID = InItemID;
+	}
+	else {
+		AmmoID = "";
+	}
 }
 
 TArray<FItemData> UInventoryComponent::GetAllInventoryItems()
@@ -91,6 +103,11 @@ void UInventoryComponent::AddItemToInventory(FName InItemID, int InAmount)
 
 		// Add the array back to the map in the correct key
 		Inventory.Add(NewItem.Type, FInventoryTypeData(Items));
+
+		// Finally, check if the new item was the same item used as the current weapon
+		if (InItemID == AmmoID && PlayerUI) {
+			PlayerUI->InGameState->UpdateAmmoCount(GetAmountOfItem(AmmoID));
+		}
 	}
 }
 
@@ -149,6 +166,11 @@ void UInventoryComponent::RemoveItemFromInventory(FName InItemID, int Amount)
 
 		// Add the array back to the map in the correct key
 		Inventory.Add(NewItem.Type, FInventoryTypeData(Items));
+
+		// Finally, check if the item was the same item used as the current weapon
+		if (InItemID == AmmoID && PlayerUI) {
+			PlayerUI->InGameState->UpdateAmmoCount(GetAmountOfItem(AmmoID));
+		}
 	}
 }
 
@@ -169,6 +191,21 @@ void UInventoryComponent::UseItem(int Order)
 			}
 		}
 	}
+}
+
+int UInventoryComponent::GetAmountOfItem(FName InItemID)
+{
+	TArray<FItemData> ArrayToSearch = GetAllInventoryItems();
+	int AmountFound = 0;
+
+	if (ArrayToSearch.IsEmpty() == false) {
+		for (FItemData j : ArrayToSearch) {
+			if (j.ItemID == InItemID) {
+				AmountFound += j.Amount;
+			}
+		}
+	}
+	return AmountFound;
 }
 
 TArray<FItemData> UInventoryComponent::SortInventoryAlphabetically(TEnumAsByte<EItemType> Type)

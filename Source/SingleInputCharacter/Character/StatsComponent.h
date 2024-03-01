@@ -26,11 +26,16 @@ public:
 
 	/// -- Stat Setup --
 	// Called to setup the default stats
-	void SetupStats();
+	void SetupStats(int InTeam);
 
 	/// -- Stat Modification --
 	// Called to make the unit take damage
-	void TakeDamage(int Amount);
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(int Amount, float InCritChance, float InCritMulti);
+
+	// Called to calculate if an attack should crit or not
+	UFUNCTION(BlueprintCallable)
+	int CalculateCrit();
 
 	// Called to heal the unit
 	void HealUnit(int Amount);
@@ -47,7 +52,11 @@ public:
 
 	/// -- Getting Stats --
 	// Called to get a stat based on a stat tag
+	UFUNCTION(BlueprintCallable)
 	float GetStatByTag(FString StatTag);
+
+	// Called to return the team value
+	int GetTeam();
 
 	// Called to return the current health
 	int GetCurrentHealth();
@@ -55,15 +64,12 @@ public:
 	// Called to return the max health
 	int GetMaxHealth();
 
-	// Called to return the damage multiplier
-	float GetUnitDamageMultiplier();
-
-	// Called to return the base damage increase
-	int GetUnitBonusDamage();
-
 	/// -- Setting Stats --
 	// Called to update a stat amount
 	void UpdateStat(FString StatTag, float ModificationAmount);
+
+	// Called to update combat stats when equipping or unequipping a weapon
+	void UpdateCombatStatsFromWeapon(FWeaponData WeaponStats, bool bEquipping, UTexture2D* WeaponIcon, int CurrentAmmo);
 
 protected:
 	// Called when the game starts
@@ -71,6 +77,10 @@ protected:
 
 public:	
 	/// -- Universal Stats --
+	// Int denoting the owners team (-1 for destructable)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
+	int ObjectTeam;
+
 	// Int denoting the object's current health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
 	int CurrentHealth = -1;
@@ -81,23 +91,52 @@ public:
 
 	// Int denoting the object's base defence
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
-	int BaseDefence;
-
-	// Int denoting the object's defence bonus (deprecate)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
-	int BonusDefence = 0;
+	int Defence;
 
 	// Int denoting the defence calculation value
 	// Reaching this amount of defence will reduce damage by 50%, with reduced effeciveness past this
 	int DefenceCalcValue = 200;
 
-	// Int denoting the current damage multiplier
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
-	float DamageMulti = 1.0f;
+	/// -- Combat Stats --
+	// Pointer to the unit's equipped weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	class AWeaponItem* EquippedWeapon = nullptr;
 
-	// Int denoting the units bonus damage 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Universal Stats")
-	int BonusDamage = 0;
+	// Int denoting the units damage 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	int Damage = 0;
+
+	// Float denoting the units crit chance (chance to increase weapon damage) 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float CritChance = 0.0f;
+
+	// Float denoting the units crit damage (the amount to increase the base damage by when criting) 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float CritDamage = 0.0f;
+
+	// Float denoting the duration the unit takes to reach maximum accuracy 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float AccuracyChargeTime = 0.0f;
+
+	// Float denoting the minimum (empty charge) accuracy angle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float MinAccuracy = 0.0f;
+
+	// Float denoting the maximum (full charge) accuracy angle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float MaxAccuracy = 0.0f;
+
+	// Int denoting the unit's maximum range (in uu)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	int Range = 0;
+
+	// Float denoting the duration of time between each shot
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	float FireRate = 0.0f;
+
+	// Bool denoting if the unit has infinite ammo
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Stats")
+	bool bInfiniteAmmo = false;
 
 	/// -- Buffs/Debuffs --
 	// TMap storing all timer handles related to buffs/debuffs

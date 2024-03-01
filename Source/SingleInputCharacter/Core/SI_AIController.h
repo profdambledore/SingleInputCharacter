@@ -36,6 +36,9 @@ public:
 	// Called to change the AI state to MoveToCraftingStation
 	void SetActiveStateToStation(class AActor* StationToAccess);
 
+	// Called to change the AI state to Combat
+	void SetActiveStateToCombat(AActor* Target);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -33,6 +33,28 @@ void USI_StorageState::NativeConstruct()
 	// Sort Oldest Button Release
 	PlayerDisplayMaterialsButton->OnReleased.AddDynamic(this, &USI_StorageState::OnPlayerDisplayMaterialsReleased);
 
+	// Storage Side
+	// Sort All Button Release
+	StorageDisplayAlphabeticalButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayAlphabeticalReleased);
+
+	// Sort Weapons Button Release
+	StorageDisplayNewestButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayNewestReleased);
+
+	// Sort Armour Button Release
+	StorageDisplayOldestButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayOldestReleased);
+
+	// Sort Materials Button Release
+	StorageDisplayItemsButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayItemsReleased);
+
+	// Sort Alphabetical Button Release
+	StorageDisplayWeaponsButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayWeaponsReleased);
+
+	// Sort Newest Button Release
+	StorageDisplayArmourButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayArmourReleased);
+
+	// Sort Oldest Button Release
+	StorageDisplayMaterialsButton->OnReleased.AddDynamic(this, &USI_StorageState::OnStorageDisplayMaterialsReleased);
+
 	// Close Menu Button Release
 	CloseMenuButton->OnReleased.AddDynamic(this, &USI_StorageState::OnCloseMenuButtonReleased);
 }
@@ -61,12 +83,15 @@ void USI_StorageState::OnStateDeactivate()
 	StorageInventory = nullptr;
 }
 
-void USI_StorageState::DisplayInventoryItems(class UInventoryComponent* NewStorageInventory)
+void USI_StorageState::DisplayInventoryItems(class UInventoryComponent* NewStorageInventory, FString InStorageName)
 {
 	// Set the StorageInventory to the NewStorageInventory if not nullptr;
 	if (NewStorageInventory) {
 		StorageInventory = NewStorageInventory;
 	}
+
+	// Update the StorageName
+	StorageName = InStorageName;
 
 	if (PlayerInventory) {
 		switch (PlayerDisplayOrder) {
@@ -278,28 +303,29 @@ void USI_StorageState::OnStorageDisplayOldestReleased()
 void USI_StorageState::OnStorageDisplayItemsReleased()
 {
 	StorageTypeToDisplay = Item;
-	StorageSortText->SetText(FText::FromString(TEXT("%s - All")));
+	StorageSortText->SetText(FText::FromString(FString::Printf(TEXT("%s - All"), *StorageName)));
 	DisplayStorageInventoryItems();
+
 }
 
 void USI_StorageState::OnStorageDisplayWeaponsReleased()
 {
 	StorageTypeToDisplay = Weapon;
-	StorageSortText->SetText(FText::FromString(TEXT("%s - Weapon")));
+	StorageSortText->SetText(FText::FromString(FString::Printf(TEXT("%s - Weapon"), *StorageName)));
 	DisplayStorageInventoryItems();
 }
 
 void USI_StorageState::OnStorageDisplayArmourReleased()
 {
 	StorageTypeToDisplay = Armour;
-	StorageSortText->SetText(FText::FromString(TEXT("%s - Armour")));
+	StorageSortText->SetText(FText::FromString(FString::Printf(TEXT("%s - Armour"), *StorageName)));
 	DisplayStorageInventoryItems();
 }
 
 void USI_StorageState::OnStorageDisplayMaterialsReleased()
 {
 	StorageTypeToDisplay = Material;
-	StorageSortText->SetText(FText::FromString(TEXT("%s - Material")));
+	StorageSortText->SetText(FText::FromString(FString::Printf(TEXT("%s - Material"), *StorageName)));
 	DisplayStorageInventoryItems();
 }
 

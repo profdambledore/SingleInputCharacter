@@ -43,9 +43,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateDescriptionBox(FName InID, int Amount, int Order, USI_InventorySlot* NewSlot);
 
-	// Called to refresh the data in the Description Box (only when a CurrentInventorySlot is set)
-	void RefreshDescriptionBox();
-
 	// Called to clear the description box and clear the SelectedSlot
 	void ClearDescriptionBox();
 
@@ -109,6 +106,8 @@ public:
 
 	// String denoting the current selected item's name
 	FString ItemName = "";
+
+	TEnumAsByte<EItemType> ItemType;
 
 protected:
 	/// -- Components --

@@ -22,6 +22,8 @@ enum EItemType
 	Consumable UMETA(DisplayName = "Consumable")
 };
 
+ENUM_RANGE_BY_COUNT(EItemType, EItemType::Consumable);
+
 // Enum denoting the consumable type
 UENUM(BlueprintType, Category = "Items")
 enum EConsumableType
@@ -176,13 +178,33 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
 	int Damage;
 
-	// The range of the weapon (in uu)
+	// Float denoting the units crit chance (chance to increase weapon damage) 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
-	int Range;
+	float CritChance = 0.0f;
 
-	// The fire rate of the weapon
+	// Float denoting the units crit damage (the amount to increase the base damage by when criting) 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
-	float FireRate;
+	float CritDamage = 1.0f;
+
+	// Float denoting the duration the unit takes to reach maximum accuracy 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	float AccuracyChargeTime = 0.0f;
+
+	// Float denoting the minimum (empty charge) accuracy chance
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	float MinAccuracy = 0.0f;
+
+	// Float denoting the maximum (full charge) accuracy chance
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	float MaxAccuracy = 0.0f;
+
+	// Int denoting the unit's maximum range (in uu)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	int Range = 0;
+
+	// Float denoting the duration of time between each shot
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	float FireRate = 0.0f;
 };
 
 // Struct holding the data of items
@@ -203,7 +225,7 @@ public:
 
 	// The base stat modification of the buff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")
-	int BaseStat;
+	float BaseStat;
 
 	// The multiplier/percent of the base stat modification buff 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Consumable Data")

@@ -13,6 +13,8 @@ AItemManager::AItemManager()
 	MeshDisplay_Skel = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Display Skel"));
 	MeshDisplay_Skel->bVisibleInSceneCaptureOnly = true;
 	MeshDisplay_Skel->SetupAttachment(MeshDisplay_Static, "");
+	MeshDisplay_Static->SetRelativeRotation(FRotator(0.0f, 30.0f, 0.0f));
+	MeshDisplay_Skel->SetRelativeRotation(FRotator(0.0f, 30.0f, 0.0f));
 
 	DisplaySpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Display Spring Arm"));
 	DisplaySpringArm->SetupAttachment(MeshDisplay_Static, "");

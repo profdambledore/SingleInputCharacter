@@ -8,6 +8,7 @@
 #include "Components/Button.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 #include "SI_InGameState.generated.h"
 
@@ -29,6 +30,13 @@ public:
 
 	// Called to update the health bar percent based on the SingleInputPerson's current health
 	void UpdateHealthBar(float CurrentHealth, float MaxHealth);
+
+	// Called to update the weapon slot
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateWeaponSlot(UTexture* InWeaponIcon);
+
+	// Called to update the bullet count
+	void UpdateAmmoCount(int AmmoTotal);
 
 protected:
 	/// -- Button Functions --
@@ -84,6 +92,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* PlayerHealthText = nullptr;
 
+	/// -- Weapon Slot --
+	// Text Box to display the weapons current ammo count
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UTextBlock* WeaponAmmoCount = nullptr;
+
+	// Image to display the icon of the weapon
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")
+	UImage* WeaponIcon = nullptr;
 
 	// Button to open the inventory state
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Components")

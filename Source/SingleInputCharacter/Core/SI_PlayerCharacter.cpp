@@ -106,13 +106,25 @@ void ASI_PlayerCharacter::EquipWeapon(FItemData WeaponData)
 		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Hand_L");
 	}
 
+	// If a weapon is already equiped, unequip it now
+	if (EquippedWeapon->ItemData.ItemID != "") {
+		UnequipWeapon();
+	}
+
 	// Setup the weapon with the new data
 	EquippedWeapon->SetupItem(WeaponData);
 	EquippedWeaponOrder = WeaponData.Order;
+
+	// Update the stats in the StatsComponents and InventoryComponent
+	StatsComponent->UpdateCombatStatsFromWeapon(EquippedWeapon->WeaponData, true, EquippedWeapon->WeaponIcon, InventoryComponent->GetAmountOfItem(EquippedWeapon->WeaponData.AmmoID));
+	StatsComponent->EquippedWeapon = EquippedWeapon;
+	InventoryComponent->SetCurrentAmmoType(EquippedWeapon->GetWeaponAmmoID());
 }
 
 void ASI_PlayerCharacter::UnequipWeapon()
 {
+	StatsComponent->UpdateCombatStatsFromWeapon(EquippedWeapon->WeaponData, false, nullptr, -1);
+
 	EquippedWeapon->ClearWeapon();
 	EquippedWeaponOrder = -1;
 }

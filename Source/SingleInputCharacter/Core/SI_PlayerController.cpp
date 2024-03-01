@@ -14,6 +14,7 @@
 #include "Core/InputConfigData.h"
 #include "Item/ParentItem.h"
 #include "World/ParentInteractable.h"
+#include "Character/InventoryComponent.h"
 #include "Character/StatsComponent.h"
 
 // Constructor
@@ -45,7 +46,7 @@ void ASI_PlayerController::BeginPlay()
 	PlayerClass = Cast<ASI_PlayerClass>(GetPawn());
 
 	// Next, spawn the AICharacter
-	AICharacter = GetWorld()->SpawnActor<ASI_PlayerCharacter>(ASI_PlayerCharacter::StaticClass(), FVector(), FRotator(), FActorSpawnParameters());
+	AICharacter = GetWorld()->SpawnActor<ASI_PlayerCharacter>(ASI_PlayerCharacter::StaticClass(), FVector(1330.0f, 150.0f, 92.0f), FRotator(), FActorSpawnParameters());
 
 	// Then spawn it's controller and make it possess the person
 	AIControl = GetWorld()->SpawnActor<ASI_AIController>(ASI_AIController::StaticClass(), FVector(), FRotator(), FActorSpawnParameters());
@@ -61,7 +62,8 @@ void ASI_PlayerController::BeginPlay()
 		UI->AddToViewport();
 		UI->SetupUIStates(AICharacter);
 		AICharacter->StatsComponent->PlayerUI = UI;
-		AICharacter->StatsComponent->SetupStats();
+		AICharacter->StatsComponent->SetupStats(1);
+		AICharacter->InventoryComponent->PlayerUI = UI;
 	}
 
 	// Set the mouse viewable on screen
@@ -123,10 +125,20 @@ void ASI_PlayerController::InputAction(const FInputActionValue& Value)
 				}
 			}
 			// Else, check if the trace hit a interactable
-			if (TraceHit.GetActor()->IsA(AParentInteractable::StaticClass())) {
+			else if (TraceHit.GetActor()->IsA(AParentInteractable::StaticClass())) {
 				//AParentInteractable* HitStation = Cast<AParentCraftingStation>(TraceHit.GetActor());
 				AIControl->SetActiveStateToStation(TraceHit.GetActor());
 				bStateUpdate = true;
+			}
+			// Else, check if the trace hit an object with a StatComponent
+			else if (UStatsComponent* Target = TraceHit.GetActor()->GetComponentByClass<UStatsComponent>()) {
+				UE_LOG(LogTemp, Warning, TEXT("Hit Damageable"));
+				// If it does, check if the teams are different
+				if (AICharacter->StatsComponent->GetTeam() != Target->GetTeam()) {
+					// If they are, set the active state to Attack and set the target to TraceHit.GetActor
+					AIControl->SetActiveStateToCombat(TraceHit.GetActor());
+					bStateUpdate = true;
+				}
 			}
 			else if (!bStateUpdate) {
 				AIControl->SetActiveStateToMove(TraceHit.Location);

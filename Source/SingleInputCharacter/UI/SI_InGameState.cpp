@@ -42,6 +42,16 @@ void USI_InGameState::UpdateHealthBar(float CurrentHealth, float MaxHealth)
 	PlayerHealthText->SetText(FText::FromString(FString::Printf(TEXT("%i / %i"), FMath::FloorToInt(CurrentHealth), FMath::FloorToInt(MaxHealth))));
 }
 
+void USI_InGameState::UpdateAmmoCount(int AmmoTotal)
+{
+	if (AmmoTotal != -1) {
+		WeaponAmmoCount->SetText(FText::FromString(FString::Printf(TEXT("%i"), AmmoTotal)));
+	}
+	else {
+		WeaponAmmoCount->SetText(FText::FromString(FString::Printf(TEXT(""))));
+	}
+}
+
 void USI_InGameState::OnCameraAngleButtonReleased()
 {
 	// Check if the SingleInputPerson is valid
